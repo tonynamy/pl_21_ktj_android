@@ -17,7 +17,7 @@ public class FacFilterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fac_filter);
 
-        Spinner spinnerType = findViewById(R.id.spinnerType);
+        Spinner spinnerType = findViewById(R.id.spinType);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, types);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);

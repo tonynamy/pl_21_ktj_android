@@ -20,7 +20,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="60dp"
@@ -33,24 +33,54 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/spinConstruction"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox" />
 
         <EditText
             android:id="@+id/editTextTextPersonName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox"
             android:ems="10"
             android:hint="아이디"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/editTextTextPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:hint="패스워드"
+            android:inputType="textPassword"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox"
+            android:ems="10"
+            android:hint="생년월일"
+            android:inputType="number"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttonbox"
+            android:text="생성"
+            android:textSize="24sp"
+            app:backgroundTint="@null" />
+
 
     </LinearLayout>
 

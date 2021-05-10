@@ -20,7 +20,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="60dp"
@@ -33,10 +33,34 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Spinner
-            android:id="@+id/spinnerType"
+            android:id="@+id/spinType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="40sp" />
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox" />
+
+        <Spinner
+            android:id="@+id/spinBuilding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox" />
+
+        <Spinner
+            android:id="@+id/spinFloor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttonbox"
+            android:text="검색"
+            android:textSize="24sp"
+            app:backgroundTint="@null" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

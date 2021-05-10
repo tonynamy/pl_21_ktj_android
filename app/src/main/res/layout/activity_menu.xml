@@ -13,7 +13,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="AAA님 로그인하셨습니다 (BB현장)"
+        android:text="user1님 로그인하셨습니다 (화성18라인)"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

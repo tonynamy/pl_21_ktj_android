@@ -19,11 +19,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <Spinner
+            android:id="@+id/spinConstruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/textbox" />
+
         <EditText
             android:id="@+id/tbxId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/textbox"
             android:ems="10"
             android:hint="아이디"
@@ -43,13 +51,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="140dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnCreateId"
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_weight="1"
