@@ -18,7 +18,17 @@ public class MenuActivity extends AppCompatActivity {
         btnAttendMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MenuActivity.this, AttendActivity.class);
+                Intent intent = new Intent(MenuActivity.this, AttendFilterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        Button btnInstallMenu = findViewById(R.id.btnInstallMenu);
+        btnInstallMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MenuActivity.this, FacFilterActivity.class);
                 startActivity(intent);
             }
         });

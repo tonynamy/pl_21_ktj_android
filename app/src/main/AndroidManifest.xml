@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
+        android:name=".FacApplication"
         android:theme="@style/Theme.FacManager">
         <activity android:name=".CreateIdActivity"></activity>
         <activity android:name=".FacFilterActivity"></activity>
@@ -23,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AttendFilterActivity" />
     </application>
 
 </manifest>

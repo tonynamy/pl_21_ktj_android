@@ -20,7 +20,7 @@ import java.util.Map;
 public class RequestHttpUrlConnection {
 
     private static RequestHttpUrlConnection mInstance = null;
-    private static CookieManager cookieManager = new CookieManager();
+    //private static CookieManager cookieManager = new CookieManager();
 
     private String CharSet = "UTF-8";
 
@@ -32,8 +32,8 @@ public class RequestHttpUrlConnection {
 
         if(mInstance == null) mInstance = new RequestHttpUrlConnection();
 
-        CookieHandler.setDefault(cookieManager);
-        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+        //CookieHandler.setDefault(cookieManager);
+        //cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 
         return mInstance;
 
@@ -62,7 +62,7 @@ public class RequestHttpUrlConnection {
 
     private String getCookieStr() {
 
-        List<HttpCookie> cookieList = this.cookieManager.getCookieStore().getCookies();
+        /*List<HttpCookie> cookieList = CookieHandler.getDefault().getCookieStore().getCookies();
 
         if(cookieList.size() > 0) {
 
@@ -76,7 +76,7 @@ public class RequestHttpUrlConnection {
 
             return cookieStringBuffer.toString();
 
-        }
+        }*/
 
         return "";
     }
