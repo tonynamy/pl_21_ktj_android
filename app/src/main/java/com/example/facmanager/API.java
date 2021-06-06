@@ -21,7 +21,7 @@ import java.util.List;
 
 public class API {
 
-    public static String ROOT_URL = "http://49.247.19.209/";
+    public static String ROOT_URL = "http://pl-21-ktj.run.goorm.io/";
 
     private static String LOGIN = ROOT_URL + "";
     private static String TEAMS = ROOT_URL + "teams";
@@ -142,7 +142,7 @@ public class API {
             }
         };
 
-        new NetworkTask(url, networkCallback).execute();
+        new NetworkTask(url, null, true, networkCallback).execute();
 
     }
 
@@ -216,7 +216,7 @@ public class API {
             }
         };
 
-        new NetworkTask(url, networkCallback).execute();
+        new NetworkTask(url, null, true, networkCallback).execute();
 
     }
 }

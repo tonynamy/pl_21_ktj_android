@@ -1,6 +1,7 @@
 package com.example.facmanager;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +80,12 @@ public class RequestHttpUrlConnection {
             return cookieStringBuffer.toString();
 
         }*/
+
+        List<HttpCookie> cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore().getCookies();
+        for (HttpCookie cookie : cookies) {
+            System.out.println(cookie.getDomain());
+            System.out.println(cookie);
+        }
 
         return "";
     }
@@ -168,13 +177,14 @@ public class RequestHttpUrlConnection {
 
             urlConnection = (HttpURLConnection) url.openConnection();
 
+            //CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+
             // Connection 속성
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Accept-Charset", this.CharSet);
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset="+this.CharSet);
 
-            // 쿠키 설정
-            urlConnection.setRequestProperty("Cookie", getCookieStr());
+            Log.d("cookie", "c- : "+getCookieStr());
 
             // 파라미터 쓰기
             OutputStream outputStream = urlConnection.getOutputStream();
@@ -189,6 +199,8 @@ public class RequestHttpUrlConnection {
             } else {
                 inputStream = urlConnection.getErrorStream();
             }
+
+            System.out.println(urlConnection.getHeaderFields());
 
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream, this.CharSet));
 
