@@ -52,12 +52,11 @@ public class API {
         this.apiCallback = builder.apiCallback;
     }
 
-    public void login(String username, String password) {
+    public void login(String username) {
 
         String url = LOGIN;
         ContentValues values = new ContentValues();
         values.put("username", username);
-        values.put("password", password);
 
         NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
 

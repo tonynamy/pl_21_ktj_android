@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
         spinConstruction.setAdapter(adapter);
 
         EditText et_username = findViewById(R.id.tbxId);
-        EditText et_password = findViewById(R.id.tbxPassword);
 
         Button btnCreateId = findViewById(R.id.btnCreateId);
         btnCreateId.setOnClickListener(new View.OnClickListener() {
@@ -45,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String username = et_username.getText().toString();
-                String password = et_password.getText().toString();
 
                 API.APICallback apiCallback = new API.APICallback() {
 
@@ -63,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
                 API api = new API.Builder(apiCallback).build();
 
-                api.login(username, password);
+                api.login(username);
             }
         });
     }
