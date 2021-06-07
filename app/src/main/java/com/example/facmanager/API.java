@@ -26,6 +26,7 @@ public class API {
     private static String LOGIN = ROOT_URL + "";
     private static String TEAMS = ROOT_URL + "teams";
     private static String ATTENDANCES = ROOT_URL + "attendance";
+    private static String ATTENDANCE_ADD = ROOT_URL + "attendance_add";
 
     public interface APICallback {
         public void onSuccess(Object data);
@@ -57,6 +58,30 @@ public class API {
         ContentValues values = new ContentValues();
         values.put("username", username);
         values.put("password", password);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+    public void addAttendance(String userId, String type) {
+
+        String url = ATTENDANCE_ADD;
+        ContentValues values = new ContentValues();
+        values.put("user_id", userId);
+        values.put("type", type);
 
         NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
 

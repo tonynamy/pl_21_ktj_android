@@ -10,14 +10,10 @@ public class AttendanceRecord {
     public static final int LEAVED_WORK = 1;
 
     private HashMap<String, Integer> record = new HashMap<>();
+    private HashMap<String, String> userNameIdMap = new HashMap<>();
 
-    public void addUsers(List<String> userNameList) {
-        for(String userName:userNameList) {
-            record.put(userName, NOT_ATTEND);
-        }
-    }
 
-    public void addRecord(String userName, int type) {
+    public void addRecord(String userName, String userId, int type) {
 
         if(record.containsKey(userName)) {
 
@@ -28,6 +24,12 @@ public class AttendanceRecord {
         }
 
         record.put(userName, type);
+
+        userNameIdMap.put(userName, userId);
+    }
+
+    public String getUserId(String userName) {
+        return userNameIdMap.get(userName);
     }
 
     public HashMap<String, Integer> getRecord() {

@@ -1,38 +1,39 @@
 package com.example.facmanager;
 
-import android.widget.Button;
-
 public class AttendItem {
-    String txtName;
-    String txtAttend;
-    Button btnAttend;
 
-    public AttendItem(String txtName, String txtAttend) {
-        this.txtName = txtName;
-        this.txtAttend = txtAttend;
+    private String id;
+    private String name;
+    private int type;
+
+    public AttendItem(String id, String name, int type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
     }
 
-    public String getTxtName() {
-        return txtName;
+
+    public String getName() {
+        return name;
     }
 
-    public void setTxtName(String txtName) {
-        this.txtName = txtName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTxtAttend() {
-        return txtAttend;
+    public int getType() {
+        return type;
     }
 
-    public void setTxtAttend(String txtAttend) {
-        this.txtAttend = txtAttend;
+    public void setType(int type) {
+        this.type = type;
     }
 
-    public Button getBtnAttend() {
-        return btnAttend;
+    public String getId() {
+        return id;
     }
 
-    public void setBtnAttend(Button btnAttend) {
-        this.btnAttend = btnAttend;
+    public void setId(String id) {
+        this.id = id;
     }
 }
