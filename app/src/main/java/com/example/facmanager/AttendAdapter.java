@@ -37,11 +37,6 @@ public class AttendAdapter extends RecyclerView.Adapter<AttendAdapter.ViewHolder
         attendItemArrayList.add(attendItem);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
     public void clear() {
         attendItemArrayList.clear();
     }
@@ -110,18 +105,21 @@ public class AttendAdapter extends RecyclerView.Adapter<AttendAdapter.ViewHolder
 
         public void setItem(AttendItem attendItem) {
             this.attendItem = attendItem;
-
             txtName.setText(attendItem.getName());
             int type = attendItem.getType();
             String typeText = "";
+            String buttonText = "";
             int typeColor;
+            btnAttend.setVisibility(View.VISIBLE);
             switch (type) {
                 case AttendanceRecord.NOT_ATTEND :
                     typeText = "출근전";
+                    buttonText = "출근";
                     typeColor = Color.GRAY;
                     break;
                 case AttendanceRecord.ATTENDED:
                     typeText = "출근";
+                    buttonText = "퇴근";
                     typeColor = Color.BLUE;
                     break;
                 case AttendanceRecord.LEAVED_WORK:
@@ -134,6 +132,7 @@ public class AttendAdapter extends RecyclerView.Adapter<AttendAdapter.ViewHolder
                     typeColor = Color.RED;
                     break;
             }
+            btnAttend.setText(buttonText);
             txtAttend.setText(typeText);
             txtAttend.setTextColor(typeColor);
         }
