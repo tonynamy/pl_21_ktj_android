@@ -27,6 +27,7 @@ public class API {
     private static String TEAMS = ROOT_URL + "teams";
     private static String ATTENDANCES = ROOT_URL + "attendance";
     private static String ATTENDANCE_ADD = ROOT_URL + "attendance_add";
+    private static String ADD_USER = ROOT_URL + "add_user";
 
     public interface APICallback {
         public void onSuccess(Object data);
@@ -50,6 +51,31 @@ public class API {
 
     public API(Builder builder) {
         this.apiCallback = builder.apiCallback;
+    }
+
+    public void add_user(String username, Date birthday) {
+
+        String url = ADD_USER;
+
+        ContentValues values = new ContentValues();
+        values.put("username", username);
+        values.put("birthday", new SimpleDateFormat("yyyy-MM-d").format(birthday));
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
     }
 
     public void login(String username) {

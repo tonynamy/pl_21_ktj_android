@@ -184,7 +184,6 @@ public class RequestHttpUrlConnection {
             urlConnection.setRequestProperty("Accept-Charset", this.CharSet);
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset="+this.CharSet);
 
-            Log.d("cookie", "c- : "+getCookieStr());
 
             // 파라미터 쓰기
             OutputStream outputStream = urlConnection.getOutputStream();
