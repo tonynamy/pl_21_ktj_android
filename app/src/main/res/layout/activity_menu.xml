@@ -7,13 +7,12 @@
     tools:context=".MenuActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/txtInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:text="user1님 로그인하셨습니다 (화성18라인)"
+        android:layout_margin="8dp"
+        android:text="로그인 정보"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,12 +39,33 @@
             app:backgroundTint="@null" />
 
         <Button
-            android:id="@+id/btnInstallMenu"
+            android:id="@+id/btnTeamLeaderMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/buttonbox"
-            android:text="설치해체관리"
+            android:text="팀장님메뉴"
+            android:textSize="24sp"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/btnManagerMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/buttonbox"
+            android:text="관리자메뉴"
+            android:textSize="24sp"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/btnAdminMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/buttonbox"
+            android:text="최고관리자 메뉴
+"
             android:textSize="24sp"
             app:backgroundTint="@null" />
     </LinearLayout>

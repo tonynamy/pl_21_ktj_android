@@ -32,25 +32,50 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <EditText
+            android:id="@+id/eTextSerialNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/textbox"
+            android:ems="10"
+            android:hint="승인번호"
+            android:inputType="textPersonName"
+            android:textSize="24sp" />
+
         <Spinner
             android:id="@+id/spinType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/textbox" />
+
+        <Spinner
+            android:id="@+id/spinSubcont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/textbox" />
 
         <Spinner
             android:id="@+id/spinBuilding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/textbox" />
 
         <Spinner
             android:id="@+id/spinFloor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/textbox" />
+
+        <Spinner
+            android:id="@+id/spinSpot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/textbox" />
 
         <Button

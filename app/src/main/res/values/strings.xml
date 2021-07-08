@@ -2,15 +2,18 @@
 <resources>
     <string name="app_name">Fac Manager</string>
 
-    <string-array name="constructions">
-        <item>화성18라인</item>
-    </string-array>
-
     <string-array name="types">
         <item>공종</item>
         <item>설비</item>
         <item>전기</item>
         <item>건축</item>
+    </string-array>
+
+    <string-array name="subcontractors">
+        <item>사용업체</item>
+        <item>세일</item>
+        <item>대명</item>
+        <item>광건</item>
     </string-array>
 
     <string-array name="buildings">
@@ -32,6 +35,13 @@
         <item>7F</item>
         <item>8F</item>
         <item>12F</item>
+    </string-array>
+
+    <string-array name="spots">
+        <item>설치위치</item>
+        <item>G-H/15-16열</item>
+        <item>C-D/20-21열</item>
+        <item>D-E/20-21열</item>
     </string-array>
 
 </resources>

@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Spinner
-            android:id="@+id/spinConstruction"
+            android:id="@+id/spinPlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -28,13 +28,24 @@
             android:background="@drawable/textbox" />
 
         <EditText
-            android:id="@+id/tbxId"
+            android:id="@+id/tbxName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/textbox"
             android:ems="10"
-            android:hint="아이디"
+            android:hint="이름"
+            android:inputType="textPersonName"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/tbxBirth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textbox"
+            android:ems="10"
+            android:hint="생년월일 (예 740101)"
             android:inputType="textPersonName"
             android:textSize="24sp" />
 

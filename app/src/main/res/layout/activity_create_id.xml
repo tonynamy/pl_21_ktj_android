@@ -12,7 +12,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="아이디생성"
+        android:text="사용자생성"
         android:textColor="@color/black"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,36 +33,47 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Spinner
-            android:id="@+id/spinConstruction"
+            android:id="@+id/spinCreatePlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/textbox" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/tbxCreateUserName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/textbox"
             android:ems="10"
-            android:hint="아이디"
+            android:hint="이름"
             android:inputType="textPersonName"
             android:textSize="24sp" />
 
-        <EditText
-            android:id="@+id/editTextTextPersonName2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/textbox"
-            android:ems="10"
-            android:hint="생년월일"
-            android:inputType="number"
-            android:textSize="24sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="생년월일"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="24sp" />
+
+            <DatePicker
+                android:id="@+id/pickerCreateUserBirth"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/btnCreateUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/buttonbox"

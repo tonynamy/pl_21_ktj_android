@@ -1,17 +1,25 @@
 package com.example.facmanager;
 
+import java.util.Date;
+
 public class AttendItem {
 
-    private String id;
-    private String name;
-    private int type;
+    String name;
+    String id;
+    int type;
 
-    public AttendItem(String id, String name, int type) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
+    Date attend_date;
+    Date leave_date;
+
+    public AttendItem(String id, String name) {
+        this(id, name, -2);
     }
 
+    public AttendItem(String id, String name, int type) {
+        this.name = name;
+        this.id = id;
+        this.type = type;
+    }
 
     public String getName() {
         return name;
@@ -21,19 +29,19 @@ public class AttendItem {
         this.name = name;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

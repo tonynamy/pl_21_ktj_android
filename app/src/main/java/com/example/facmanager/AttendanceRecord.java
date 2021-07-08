@@ -14,15 +14,10 @@ public class AttendanceRecord {
 
 
     public void addRecord(String userName, String userId, int type) {
-
         if(record.containsKey(userName)) {
-
             int original_type = record.get(userName);
-
             if(original_type>type) return;
-
         }
-
         record.put(userName, type);
 
         userNameIdMap.put(userName, userId);
@@ -32,9 +27,6 @@ public class AttendanceRecord {
         return userNameIdMap.get(userName);
     }
 
-    public HashMap<String, Integer> getRecord() {
-        return record;
-    }
-
+    public HashMap<String, Integer> getRecord() { return record; }
 
 }

@@ -1,6 +1,8 @@
 package com.example.facmanager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -20,38 +23,32 @@ import java.util.ArrayList;
 public class AttendFilterActivity extends AppCompatActivity {
 
     ArrayList<Team> teams = new ArrayList<>();
-    ArrayList<String> teamNames = new ArrayList<>();
-
+    //ArrayList<String> teamNames = new ArrayList<>();
+    TeamItem teamItem;
+    TeamAdapter teamAdapter;
+    Boolean changeTeamMode;
+    String place_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attend_filter);
 
-        Resources resources = getResources();
-        Spinner spinTeam = findViewById(R.id.spinTeam);
+        changeTeamMode = getIntent().getBooleanExtra("changeTeamMode", false);
+        place_id = getIntent().getStringExtra("place_id");
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, teamNames);
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-        spinTeam.setAdapter(arrayAdapter);
+        RecyclerView recyclerTeam = findViewById(R.id.recyclerTeam);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerTeam.setLayoutManager(layoutManager);
+        teamAdapter = new TeamAdapter();
 
-        //spinTeam.setSelected(false);
-        //spinTeam.setSelection(0, true);
+        //팀변경 상태인 경우
+        if(changeTeamMode) {
+            teamAdapter.changeTeamMode = true;
+            teamAdapter.user_id = getIntent().getStringExtra("user_id");
+        }
 
-        spinTeam.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent = new Intent(AttendFilterActivity.this, AttendActivity.class);
-                String teamId = teams.get(position).id;
-                intent.putExtra("teamId", teamId);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        recyclerTeam.setAdapter(teamAdapter);
 
 
         API.APICallback apiCallback = new API.APICallback() {
@@ -61,14 +58,16 @@ public class AttendFilterActivity extends AppCompatActivity {
                 ArrayList<Team> _teams = (ArrayList<Team>) data;
 
                 teams.clear();
-                teamNames.clear();
-
                 teams = _teams;
-                for(Team team : _teams) {
-                    teamNames.add(team.name);
-                }
 
-                arrayAdapter.notifyDataSetChanged();
+                for(Team team : _teams) {
+                    teamItem = new TeamItem();
+                    teamItem.setTeamName(team.name);
+                    teamItem.teamId = team.id;
+                    teamAdapter.addItem(teamItem);
+                }
+                teamAdapter.notifyDataSetChanged();
+
             }
 
             @Override
