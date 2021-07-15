@@ -41,7 +41,7 @@ public class CreateIdActivity extends AppCompatActivity {
         pickerCreateUserBirth = findViewById(R.id.pickerCreateUserBirth);
         Button btn_add_user = findViewById(R.id.btnCreateUser);
 
-        pickerCreateUserBirth.init(1970,0,1,null);
+        pickerCreateUserBirth.updateDate(1970,0,1);
 
         API.APICallback apiCallback = new API.APICallback() {
             @Override

@@ -76,12 +76,12 @@ public class AttendActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 200) {
+        if(requestCode == 200) {
 
-            if (resultCode == RESULT_OK) {
+            if(resultCode == RESULT_OK) {
 
                 String team_id = data.getStringExtra("team_id");
                 String user_id = data.getStringExtra("user_id");
@@ -89,7 +89,7 @@ public class AttendActivity extends AppCompatActivity {
                 API.APICallback apiCallback = new API.APICallback() {
                     @Override
                     public void onSuccess(Object data) {
-                        Toast.makeText(AttendActivity.this, "팀을 변경하는데 성공했습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AttendActivity.this, "팀을 변경하는데 성공했습니다. ", Toast.LENGTH_SHORT).show();
                         loadAttendance();
                     }
 

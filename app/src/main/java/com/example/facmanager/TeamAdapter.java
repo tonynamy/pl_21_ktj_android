@@ -63,7 +63,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
                     //팀변경시
                     if(changeTeamMode) {
 
-                        Intent intent = new Intent();
+                        Intent intent = new Intent(context, AttendActivity.class);
                         intent.putExtra("team_id", teamItemArrayList.get(position).teamId);
                         intent.putExtra("user_id", user_id);
 

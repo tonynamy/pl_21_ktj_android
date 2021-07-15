@@ -99,7 +99,7 @@ public class AttendAdapter extends RecyclerView.Adapter<AttendAdapter.ViewHolder
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
-                    int position = getAdapterPosition();
+                    //int position = getAdapterPosition();
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     View view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_attendance, null);
@@ -116,7 +116,7 @@ public class AttendAdapter extends RecyclerView.Adapter<AttendAdapter.ViewHolder
 
                     AlertDialog dialog = builder.create();
 
-                    txtDialogTitle.setText(attendItem.getName()+ "출근 상황 수정");
+                    txtDialogTitle.setText(attendItem.getName()+ " 출근 상황 수정");
 
                     SimpleDateFormat sdf_hour = new SimpleDateFormat("HH");
                     SimpleDateFormat sdf_minute = new SimpleDateFormat("mm");

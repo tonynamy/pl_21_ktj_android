@@ -6,7 +6,7 @@ public class UserAttendance {
 
     public String id;
     public String name;
-    public Date birthday;
+    public String birthday;
     public Date date;
     public int type;
 }

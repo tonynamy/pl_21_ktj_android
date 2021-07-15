@@ -5,16 +5,21 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".FacApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="건설현장관리App"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:name=".FacApplication"
-        android:theme="@style/Theme.FacManager">
-        <activity android:name=".CreateIdActivity"></activity>
-        <activity android:name=".FacFilterActivity"></activity>
+        android:theme="@style/Theme.FacManager"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".TaskListActivity"></activity>
+        <activity android:name=".TeamLeaderActivity" />
+        <activity android:name=".FacilityActivity" />
+        <activity android:name=".AttendFilterActivity" />
+        <activity android:name=".FacListActivity" />
+        <activity android:name=".CreateIdActivity" />
+        <activity android:name=".FacFilterActivity" />
         <activity android:name=".AttendActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".MainActivity">
@@ -24,7 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AttendFilterActivity" />
     </application>
 
 </manifest>

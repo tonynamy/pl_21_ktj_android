@@ -90,7 +90,8 @@ public class MenuActivity extends AppCompatActivity {
         btnManagerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), FacFilterActivity.class);
+                Intent intent = new Intent(v.getContext(), TaskListActivity.class);
+                intent.putExtra("place_id", place_id);
                 startActivity(intent);
             }
         });
@@ -103,7 +104,7 @@ public class MenuActivity extends AppCompatActivity {
 
         TextView txtFindMyTeam = view.findViewById(R.id.txtFindMyTeam);
         TextView txtFindAllTeam = view.findViewById(R.id.txtFindAllTeam);
-        TextView txtDialogCancel2 = view.findViewById(R.id.txtDialogCancel2);
+        TextView txtDialogCancel2 = view.findViewById(R.id.textDialogCancel2);
 
         AlertDialog dialog = builder.create();
         dialog.show();
