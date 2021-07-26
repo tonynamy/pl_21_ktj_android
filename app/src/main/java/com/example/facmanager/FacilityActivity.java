@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.facmanager.models.Facility;
+import com.example.facmanager.models.Team;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -431,10 +432,35 @@ public class FacilityActivity extends AppCompatActivity {
                     radioStart.setVisibility(View.GONE);
                 }
 
-                HintSpinnerAdapter<String> teamAdapter = new HintSpinnerAdapter<String>(v.getContext(), R.layout.spinner_item, new ArrayList<>());
+                TaskPlanTeamAdapter teamAdapter = new TaskPlanTeamAdapter(v.getContext(), R.layout.spinner_item, new ArrayList<>());
+
                 teamAdapter.isBlack = true;
                 teamAdapter.setDropDownViewResource(R.layout.spinner_item_drop);
-                teamAdapter.add("김선재팀");
+
+                API.APICallback apiCallback = new API.APICallback() {
+                    @Override
+                    public void onSuccess(Object data) {
+
+                        ArrayList<Team> teams = (ArrayList<Team>) data;
+
+                        for(Team team : teams) {
+                            teamAdapter.add(team);
+                        }
+
+                        teamAdapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onFailed(String errorMsg) {
+                        Toast.makeText(FacilityActivity.this, "팀목록을 불러오는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                    }
+                };
+
+                API api = new API.Builder(apiCallback).build();
+
+                api.getTeams();
+
                 spinPlanTeam.setAdapter(teamAdapter);
 
                 AlertDialog dialog = builder.create();
@@ -456,7 +482,35 @@ public class FacilityActivity extends AppCompatActivity {
                 textDialogSubmit4.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dialog.dismiss();
+
+                        String facility_id = facility.id;
+                        String team_id = teamAdapter.getItem(spinPlanTeam.getSelectedItemPosition()).id;
+                        int plan = -1;
+
+                        if(radioStart.isChecked()) {
+                            plan = 1;
+                        } else if(radioEdit.isChecked()) {
+                            plan = 2;
+                        } else if(radioDis.isChecked()) {
+                            plan = 3;
+                        }
+
+                        API.APICallback apiCallback = new API.APICallback() {
+                            @Override
+                            public void onSuccess(Object data) {
+                                Toast.makeText(FacilityActivity.this, "작업 계획을 수정하는데 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+
+                            @Override
+                            public void onFailed(String errorMsg) {
+                                Toast.makeText(FacilityActivity.this, "작업 계획을 수정하는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        };
+
+                        API api = new API.Builder(apiCallback).build();
+
+                        api.editFacilityTaskPlan(facility_id, team_id, plan);
                     }
                 });
 

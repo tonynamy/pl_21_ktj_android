@@ -43,6 +43,7 @@ public class API {
     private static String FACILITY_EDIT_EXPIRED_AT = ROOT_URL + "facility_edit_expired_at";
     private static String FACILITY_EDIT_SUPER_MANAGER = ROOT_URL + "facility_edit_super_manager";
     private static String FACILITY_EDIT_PURPOSE = ROOT_URL + "facility_edit_purpose";
+    private static String FACILITY_EDIT_TASKPLAN = ROOT_URL + "facility_edit_taskplan";
 
     public interface APICallback {
         public void onSuccess(Object data);
@@ -771,6 +772,32 @@ public class API {
         ContentValues values = new ContentValues();
         values.put("id", facility_id);
         values.put("purpose", purpose);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+    public void editFacilityTaskPlan(String facility_id, String team_id, int plan) {
+
+        String url = FACILITY_EDIT_TASKPLAN;
+
+        ContentValues values = new ContentValues();
+        values.put("facility_id", facility_id);
+        values.put("team_id", team_id);
+        values.put("plan", plan);
 
         NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
 
