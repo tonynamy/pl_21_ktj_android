@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class API {
 
-    public static String ROOT_URL = "https://pl-21-ktj.run.goorm.io/";
+    public static String ROOT_URL = "http://pl-21-ktj.run.goorm.io/";
 
     private static String LOGIN = ROOT_URL + "";
     private static String TEAMS = ROOT_URL + "teams";
@@ -38,6 +38,11 @@ public class API {
     private static String ADD_USER = ROOT_URL + "add_user";
     private static String FACILITY_INFO = ROOT_URL + "facility_info";
     private static String FACILITY_SEARCH = ROOT_URL + "facility_search";
+    private static String FACILITY = ROOT_URL + "facility";
+    private static String FACILITY_EDIT_STATE = ROOT_URL + "facility_edit_state";
+    private static String FACILITY_EDIT_EXPIRED_AT = ROOT_URL + "facility_edit_expired_at";
+    private static String FACILITY_EDIT_SUPER_MANAGER = ROOT_URL + "facility_edit_super_manager";
+    private static String FACILITY_EDIT_PURPOSE = ROOT_URL + "facility_edit_purpose";
 
     public interface APICallback {
         public void onSuccess(Object data);
@@ -106,6 +111,7 @@ public class API {
         String url = LOGIN;
         ContentValues values = new ContentValues();
         values.put("place_id", place_id);
+        Log.d("코딩하자", place_id);
         values.put("username", username);
         values.put("birthday", birthday);
 
@@ -593,6 +599,184 @@ public class API {
                     e.printStackTrace();
                 }
 
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+    public void getFacility(String facility_id) {
+
+        String url = FACILITY;
+
+        ContentValues values = new ContentValues();
+        values.put("facility_id", facility_id);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+
+                Facility facility = new Facility();
+
+                try {
+
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    String id = jsonObject.getString("id");
+                    String place_id = jsonObject.getString("place_id");
+                    String serial = jsonObject.getString("serial");
+                    String type = jsonObject.getString("type");
+                    String super_manager = jsonObject.getString("super_manager");
+                    String purpose = jsonObject.getString("purpose");
+                    String subcontractor = jsonObject.getString("subcontractor");
+                    String building = jsonObject.getString("building");
+                    String floor = jsonObject.getString("floor");
+                    String spot = jsonObject.getString("spot");
+                    String started_at = jsonObject.getString("started_at");
+                    String finished_at = jsonObject.getString("finished_at");
+                    String edit_started_at = jsonObject.getString("edit_started_at");
+                    String edit_finished_at = jsonObject.getString("edit_finished_at");
+                    String dis_started_at = jsonObject.getString("dis_started_at");
+                    String dis_finished_at = jsonObject.getString("dis_finished_at");
+                    String expired_at = jsonObject.getString("expired_at");
+                    String created_at = jsonObject.getString("created_at");
+
+                    facility.id = id;
+                    facility.place_id = place_id;
+                    facility.serial = serial;
+                    facility.type = Integer.parseInt(type);
+                    facility.super_manager = super_manager;
+                    facility.purpose = purpose;
+                    facility.subcontractor = subcontractor;
+                    facility.building = building;
+                    facility.floor = floor;
+                    facility.spot = spot;
+
+                    facility.started_at = getDateFromString(started_at);
+                    facility.finished_at = getDateFromString(finished_at);
+                    facility.edit_started_at = getDateFromString(edit_started_at);
+                    facility.edit_finished_at = getDateFromString(edit_finished_at);
+                    facility.dis_started_at = getDateFromString(dis_started_at);
+                    facility.dis_finished_at = getDateFromString(dis_finished_at);
+                    facility.expired_at = getDateFromString(expired_at);
+                    facility.created_at = getDateFromString(created_at);
+
+                    apiCallback.onSuccess(facility);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+
+    public void editFacilityState(String facility_id, int state_type) {
+
+        String url = FACILITY_EDIT_STATE;
+
+        ContentValues values = new ContentValues();
+        values.put("id", facility_id);
+        values.put("state_type", state_type);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+
+    public void editFacilityExpiredAt(String facility_id, Date expired_at) {
+
+        String url = FACILITY_EDIT_EXPIRED_AT;
+
+        ContentValues values = new ContentValues();
+        values.put("id", facility_id);
+        values.put("expired_at", new SimpleDateFormat("yyyy-MM-dd").format(expired_at));
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+    public void editFacilitySuperManager(String facility_id, String super_manager) {
+
+        String url = FACILITY_EDIT_SUPER_MANAGER;
+
+        ContentValues values = new ContentValues();
+        values.put("id", facility_id);
+        values.put("super_manager", super_manager);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+    }
+
+    public void editFacilityPurpose(String facility_id, String purpose) {
+
+        String url = FACILITY_EDIT_PURPOSE;
+
+        ContentValues values = new ContentValues();
+        values.put("id", facility_id);
+        values.put("purpose", purpose);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
             }
 
             @Override

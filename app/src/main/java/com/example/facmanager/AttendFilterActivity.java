@@ -62,7 +62,7 @@ public class AttendFilterActivity extends AppCompatActivity {
 
                 for(Team team : _teams) {
                     teamItem = new TeamItem();
-                    teamItem.setTeamName(team.name);
+                    teamItem.teamName = team.name;
                     teamItem.teamId = team.id;
                     teamAdapter.addItem(teamItem);
                 }

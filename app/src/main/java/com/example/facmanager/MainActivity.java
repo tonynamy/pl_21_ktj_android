@@ -1,15 +1,22 @@
 package com.example.facmanager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.facmanager.models.Auth;
@@ -19,6 +26,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    Spinner spinPlace;
+    EditText et_username;
+    EditText et_birthday;
+    Button btnCreateId;
+    Button btn_login;
+
     ArrayList<Place> places;
 
     @Override
@@ -26,33 +39,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //레이아웃에서 불러오기
+        spinPlace = findViewById(R.id.spinPlace);
+        et_username = findViewById(R.id.tbxName);
+        et_birthday = findViewById(R.id.tbxBirth);
+        btnCreateId = findViewById(R.id.btnCreateId);
+        btn_login = findViewById(R.id.btnLogin);
+
+        //Shared Preferences에서 이전 로그인 기록 확인
         SharedPreferences userPrefs = getSharedPreferences("userInfo", MODE_PRIVATE);
+        Boolean isUserInfo = userPrefs.getBoolean("isUserInfo", false);
         int userPlaceInPrefs = userPrefs.getInt("userPlace", 0);
+        Log.d("코딩하자", String.valueOf(userPlaceInPrefs));
         String userNameInPrefs = userPrefs.getString("userName", "");
         String userBirthdayInPrefs = userPrefs.getString("userBirthday", "");
 
-        Spinner spinPlace = findViewById(R.id.spinPlace);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, new ArrayList<>());
-        adapter.setDropDownViewResource(R.layout.spinner_item);
+        //Shared Preferences에서 이전 로그인기록 이름, 생일에 넣기
+        if(isUserInfo){
+            et_username.setText(userNameInPrefs);
+            et_birthday.setText(userBirthdayInPrefs);
+        }
+
+        //스피너에 넣을 어댑터
+        HintSpinnerAdapter<String> adapter = new HintSpinnerAdapter<String>(this, R.layout.spinner_item, new ArrayList<>());
+        adapter.setDropDownViewResource(R.layout.spinner_item_drop);
         spinPlace.setAdapter(adapter);
 
-        EditText et_username = findViewById(R.id.tbxName);
-        EditText et_birthday = findViewById(R.id.tbxBirth);
-
-        et_username.setText(userNameInPrefs);
-        et_birthday.setText(userBirthdayInPrefs);
-
-        Button btnCreateId = findViewById(R.id.btnCreateId);
-        btnCreateId.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CreateIdActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        Button btn_login = findViewById(R.id.btnLogin);
-
+        //API
         API.APICallback apiCallback = new API.APICallback() {
             @Override
             public void onSuccess(Object data) {
@@ -60,16 +73,19 @@ public class MainActivity extends AppCompatActivity {
                 places = (ArrayList<Place>) data;
 
                 ArrayList<String> place_name = new ArrayList<>();
+                place_name.add(0, "현장명");
 
                 for(Place place : places) {
-
                     place_name.add(place.name);
-
                 }
 
                 adapter.addAll(place_name);
                 adapter.notifyDataSetChanged();
-                spinPlace.setSelection(userPlaceInPrefs);
+
+                //Shared Preferences에서 이전 로그인기록 Spinner에 넣기
+                if(isUserInfo){
+                    spinPlace.setSelection(userPlaceInPrefs);
+                }
             }
 
             @Override
@@ -79,50 +95,67 @@ public class MainActivity extends AppCompatActivity {
         };
 
         API api = new API.Builder(apiCallback).build();
-
         api.getPlaces();
 
 
+        //아이디 생성 버튼
+        btnCreateId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CreateIdActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //로그인 버튼
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String place_id = places.get(spinPlace.getSelectedItemPosition()).id;
-                String username = et_username.getText().toString();
-                String birthday = et_birthday.getText().toString();
-
-                API.APICallback apiCallback = new API.APICallback() {
-
-                    @Override
-                    public void onSuccess(Object data) {
-
-                        SharedPreferences userPrefs = getSharedPreferences("userInfo", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = userPrefs.edit();
-                        editor.putInt("userPlace", spinPlace.getSelectedItemPosition());
-                        editor.putString("userName", et_username.getText().toString());
-                        editor.putString("userBirthday", et_birthday.getText().toString());
-                        editor.commit();
-
-                        Auth auth = (Auth) data;
-
-                        Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                        intent.putExtra("level", auth.level);
-                        intent.putExtra("place_id", auth.place.id);
-                        intent.putExtra("place_name", auth.place.name);
-                        intent.putExtra("user_name", auth.user_name);
-                        intent.putExtra("team_id", auth.team_id);
-
-                        startActivity(intent);
+                if(spinPlace.getAdapter() == adapter) {
+                    String place_id = "";
+                    if(spinPlace.getSelectedItemPosition() > 0) {
+                        place_id = places.get(spinPlace.getSelectedItemPosition() - 1).id;
                     }
+                    String username = et_username.getText().toString();
+                    String birthday = et_birthday.getText().toString();
 
-                    @Override
-                    public void onFailed(String errorMsg) {
-                        Toast.makeText(MainActivity.this, "로그인에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
-                    }
-                };
+                    API.APICallback apiCallback = new API.APICallback() {
 
-                API api = new API.Builder(apiCallback).build();
+                        @Override
+                        public void onSuccess(Object data) {
+                            //Shared Preferences에 로그인 기록 저장
+                            SharedPreferences userPrefs = getSharedPreferences("userInfo", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userPrefs.edit();
+                            editor.putBoolean("isUserInfo", true);
+                            editor.putInt("userPlace", spinPlace.getSelectedItemPosition());
+                            editor.putString("userName", et_username.getText().toString());
+                            editor.putString("userBirthday", et_birthday.getText().toString());
+                            editor.commit();
 
-                api.login(place_id, username, birthday);
+                            Auth auth = (Auth) data;
+
+                            Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                            intent.putExtra("level", auth.level);
+                            intent.putExtra("place_id", auth.place.id);
+                            intent.putExtra("place_name", auth.place.name);
+                            intent.putExtra("user_name", auth.user_name);
+                            intent.putExtra("team_id", auth.team_id);
+
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onFailed(String errorMsg) {
+                            Toast.makeText(MainActivity.this, "로그인에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                        }
+                    };
+
+                    API api = new API.Builder(apiCallback).build();
+
+                    api.login(place_id, username, birthday);
+                } else {
+                    Toast.makeText(v.getContext(), "현장명을 선택해주세요.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

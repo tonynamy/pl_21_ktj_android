@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.facmanager.models.Facility;
@@ -16,18 +18,37 @@ import java.util.ArrayList;
 
 public class FacListActivity extends AppCompatActivity {
 
+    TextView textSeachItemNum;
+
     FacAdapter adapter = new FacAdapter();
     String place_id;
+
+    String serial;
+    int type;
+    String subcontractor;
+    String building;
+    String floor;
+    String spot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fac_list);
 
+        textSeachItemNum = findViewById(R.id.textSeachItemNum);
         RecyclerView recyclerFac = findViewById(R.id.recyclerFac);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerFac.setLayoutManager(layoutManager);
+
+        adapter.setOnFacItemClicked(new FacAdapter.OnFacItemClicked() {
+            @Override
+            public void onClick(View v, Facility facility) {
+                Intent intent = new Intent(FacListActivity.this, FacilityActivity.class);
+                intent.putExtra("facility_id", facility.id);
+                startActivity(intent);
+            }
+        });
 
         recyclerFac.setAdapter(adapter);
 
@@ -41,12 +62,19 @@ public class FacListActivity extends AppCompatActivity {
 
         place_id = getIntent().getStringExtra("place_id");
 
-        String serial = getIntent().getStringExtra("serial");
-        int type = getIntent().getIntExtra("type", -1);
-        String subcontractor = getIntent().getStringExtra("subcontractor");
-        String building = getIntent().getStringExtra("building");
-        String floor = getIntent().getStringExtra("floor");
-        String spot = getIntent().getStringExtra("spot");
+        serial = getIntent().getStringExtra("serial");
+        type = getIntent().getIntExtra("type", -1);
+        subcontractor = getIntent().getStringExtra("subcontractor");
+        building = getIntent().getStringExtra("building");
+        floor = getIntent().getStringExtra("floor");
+        spot = getIntent().getStringExtra("spot");
+
+        searchFacility(type, serial, subcontractor, building, floor, spot);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
         searchFacility(type, serial, subcontractor, building, floor, spot);
     }
@@ -65,6 +93,7 @@ public class FacListActivity extends AppCompatActivity {
                     adapter.addItem(facility);
                 }
                 adapter.notifyDataSetChanged();
+                textSeachItemNum.setText(facilities.size() + "개 검색결과");
 
             }
 

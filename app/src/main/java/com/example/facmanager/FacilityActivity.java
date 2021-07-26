@@ -5,19 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.facmanager.models.Facility;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -31,6 +36,8 @@ public class FacilityActivity extends AppCompatActivity {
     Button buttonFacManger;
 
     TextView textFacType;
+    TextView textSuperManager;
+    TextView textUsage;
     TextView textFacSubCon;
     TextView textFacSpot;
     TextView textExpiredDate;
@@ -39,24 +46,14 @@ public class FacilityActivity extends AppCompatActivity {
     Button buttonCreate;
     Button buttonEdit;
     Button buttonDisassem;
-    LinearLayout layoutManager;
     Button buttonPlan;
+
+    String facility_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facility);
-
-        //예시데이터
-        facility.serial = "FM-설비-FAB-002";
-        facility.type = 1;
-        facility.subcontractor = "우현,세일,두원";
-        facility.building = "FAB";
-        facility.floor = "5F";
-        facility.spot = "B-C/13-14열";
-        facility.created_at = new Date(System.currentTimeMillis());
-        //예시데이터
-
 
         //뷰 불러오기
         textFacSerial = findViewById(R.id.textFacSerial);
@@ -65,6 +62,8 @@ public class FacilityActivity extends AppCompatActivity {
         buttonFacManger = findViewById(R.id.buttonFacManger);
 
         textFacType = findViewById(R.id.textFacType);
+        textSuperManager = findViewById(R.id.textSuperManager);
+        textUsage = findViewById(R.id.textUsage);
         textFacSubCon = findViewById(R.id.textFacSubCon);
         textFacSpot = findViewById(R.id.textFacSpot);
         textExpiredDate = findViewById(R.id.textExpiredDate);
@@ -73,8 +72,7 @@ public class FacilityActivity extends AppCompatActivity {
         buttonCreate = findViewById(R.id.buttonCreate);
         buttonEdit = findViewById(R.id.buttonEdit);
         buttonDisassem = findViewById(R.id.buttonDisassem);
-        layoutManager = findViewById(R.id.layoutManager);
-        buttonPlan = findViewById(R.id.buttonPlan);
+        buttonPlan = findViewById(R.id.buttonTaskPlan);
 
 
         //SeekBar에 터치가 안되게
@@ -85,65 +83,38 @@ public class FacilityActivity extends AppCompatActivity {
             }
         });
 
+        facility_id = getIntent().getStringExtra("facility_id");
 
-        textFacSerial.setText(facility.serial);
-        String stringFacType = "";
-        switch (facility.type) {
-            case 1:
-                stringFacType = "설비";
-                break;
-            case 2:
-                stringFacType = "전기";
-                break;
-            case 3:
-                stringFacType = "건축";
-                break;
-            case 4:
-                stringFacType = "기타";
-                break;
-            default:
-                break;
-        }
-        textFacType.setText(stringFacType);
-        textFacSubCon.setText(facility.subcontractor);
-        textFacSpot.setText(facility.building + " " + facility.floor + " " + facility.spot);
+        getFacility();
 
+        API.APICallback apiCallback = new API.APICallback() {
+            @Override
+            public void onSuccess(Object data) {
+                Facility facility = (Facility) data;
 
-        //해체완료dis_finished_at부터 설치시작started_at으로 (끝에서 앞으로) 날짜정보가 있는지 확인해나간다
-        //해체완료dis_finished_at이 있으면 해체완료 없으면 앞으로
-        //해체시작dis_started_at이 있으면 해체시작 없으면 앞으로
-        //수정완료edit_finished_at이 있으면 수정완료 없으면 앞으로
-        //수정시작edit_started_at이 있으면 수정시작 없으면 앞으로
-        //승인완료finished_at이 있으면 승인완료 없으면 앞으로
-        //설치중started_at이 있으면 설치중 없으면 설치전
-        if(facility.dis_finished_at != null) {
-            State("해체완료");
-        } else if(facility.dis_started_at != null) {
-            State("해체중");
-        } else if(facility.edit_finished_at != null) {
-            State("수정완료");
-        } else if(facility.edit_started_at != null) {
-            State("수정중");
-        } else if(facility.finished_at != null) {
-            State("승인완료");
-        } else  if(facility.started_at != null) {
-            State("설치중");
-        } else {
-            State("설치전");
-        }
+                setFacility(facility);
+            }
 
-        CheckExpiredDate();
+            @Override
+            public void onFailed(String errorMsg) {
+                Toast.makeText(FacilityActivity.this, "설비목록을 검색하는데에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        API api = new API.Builder(apiCallback).build();
+
+        api.getFacility(facility_id);
 
 
         //유저레벨에 따라 뷰가 다르게 보임
         //level 2이상일때
         buttonFacManger.setVisibility(View.VISIBLE);
         layoutTeamLeader.setVisibility(View.GONE);
-        layoutManager.setVisibility(View.VISIBLE);
+        buttonPlan.setVisibility(View.VISIBLE);
         //else
         //buttonFacManger.setVisibility(View.GONE);
         //layoutTeamLeader.setVisibility(View.VISIBLE);
-        //layoutManager.setVisibility(View.GONE);
+        //buttonPlan.setVisibility(View.GONE);
 
 
         //상태변경 버튼 눌렀을때
@@ -186,122 +157,162 @@ public class FacilityActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
 
-                //현재상태와 같은 것을 눌렀을때는 날짜가 기록되지 않는다
-                //예) 수정중 상태에서 수정중을 눌렀을때 수정시작일은 기록되지 않는다
-                textFacReady.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //설치시작일started_at ~ 해체완료일dis_finish_at까지 모든 날짜 삭제
-                        facility.started_at = null;
-                        facility.finished_at = null;
-                        facility.edit_started_at = null;
-                        facility.edit_finished_at = null;
-                        facility.dis_started_at = null;
-                        facility.dis_finished_at = null;
-                        facility.expired_at = null;
-                        State("설치전");
-                        CheckLog();
-                        dialog.dismiss();
-                    }
-                });
+                ArrayList<TextView> FacStateTextViews = new ArrayList<>();
 
-                textFacCreate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //현장승인일finihshed_at ~ 해체완료일dis_finish_at까지 모든 날짜 삭제
-                        //설치시작일started_at에 버튼을 누른 날짜 입력, 현재상태와 같으면 입력 안됨
-                        if(textTaskState.getText() != "설치중")
-                            facility.started_at = new Date(System.currentTimeMillis());
-                        facility.finished_at = null;
-                        facility.edit_started_at = null;
-                        facility.edit_finished_at = null;
-                        facility.dis_started_at = null;
-                        facility.dis_finished_at = null;
-                        facility.expired_at = null;
-                        State("설치중");
-                        CheckLog();
-                        dialog.dismiss();
-                    }
-                });
+                FacStateTextViews.add(textFacReady);
+                FacStateTextViews.add(textFacCreate);
+                FacStateTextViews.add(textFacFinish);
+                FacStateTextViews.add(textFacEdit);
+                FacStateTextViews.add(textFacEditFin);
+                FacStateTextViews.add(textFacDisassem);
+                FacStateTextViews.add(textFacDisFin);
 
-                textFacFinish.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //수정시작일edit_started_at ~ 해체완료일dis_finish_at까지 모든 날짜 삭제
-                        //현장승인일finished_at에 버튼을 누른 날짜 입력, 현재상태와 같으면 입력 안됨
-                        if(textTaskState.getText() != "승인완료")
-                            facility.finished_at = new Date(System.currentTimeMillis());
-                        facility.edit_started_at = null;
-                        facility.edit_finished_at = null;
-                        facility.dis_started_at = null;
-                        facility.dis_finished_at = null;
-                        State("승인완료");
-                        dialog.dismiss();
-                        CheckLog();
-                    }
-                });
+                for(int i = 0; i < FacStateTextViews.size(); i++) {
 
-                textFacEdit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //수정완료일edit_finished_at ~ 해체완료일dis_finish_at까지 모든 날짜 삭제
-                        //수정시작일edit_started_at에 버튼을 누른 날짜 입력, 현재상태와 같으면 입력 안됨
-                        if(textTaskState.getText() != "수정중")
-                            facility.edit_started_at = new Date(System.currentTimeMillis());
-                        facility.edit_finished_at = null;
-                        facility.dis_started_at = null;
-                        facility.dis_finished_at = null;
-                        State("수정중");
-                        CheckLog();
-                        dialog.dismiss();
-                    }
-                });
+                    final int state_type = i;
 
-                textFacEditFin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //해체시작일dis_started_at ~ 해체완료일dis_finish_at까지 모든 날짜 삭제
-                        //수정완료일edit_finished_at에 버튼을 누른 날짜 입력, 현재상태와 같으면 입력 안됨
-                        if(textTaskState.getText() != "수정완료")
-                            facility.edit_finished_at = new Date(System.currentTimeMillis());
-                        facility.dis_started_at = null;
-                        facility.dis_finished_at = null;
-                        State("수정완료");
-                        CheckLog();
-                        dialog.dismiss();
-                    }
-                });
+                    FacStateTextViews.get(i).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                textFacDisassem.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //해체완료일dis_finish_at날짜 삭제
-                        //해체시작일dis_started_at에 버튼을 누른 날짜 입력, 현재상태와 같으면 입력 안됨
-                        if(textTaskState.getText() != "해체중")
-                            facility.dis_started_at = new Date(System.currentTimeMillis());
-                        facility.dis_finished_at = null;
-                        State("해체중");
-                        CheckLog();
-                        dialog.dismiss();
-                    }
-                });
+                            API.APICallback apiCallback = new API.APICallback() {
+                                @Override
+                                public void onSuccess(Object data) {
+                                    getFacility();
+                                    dialog.dismiss();
+                                    Toast.makeText(v.getContext(), "진행상황 변경에 성공했습니다", Toast.LENGTH_SHORT).show();
+                                }
 
-                textFacDisFin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //해체완료일dis_finish_at에 버튼을 누른 날짜 입력, 현재상태와 같으면 입력 안됨
-                        if(textTaskState.getText() != "해체완료")
-                            facility.dis_finished_at = new Date(System.currentTimeMillis());
-                        State("해체완료");
-                        CheckLog();
-                        dialog.dismiss();
-                    }
-                });
+                                @Override
+                                public void onFailed(String errorMsg) {
+                                    dialog.dismiss();
+                                    Toast.makeText(v.getContext(), "진행상황 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                }
+                            };
+
+                            API api = new API.Builder(apiCallback).build();
+
+                            api.editFacilityState(facility_id, state_type);
+                        }
+                    });
+
+                }
 
                 textFacDialogCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        //담당자 등록하기
+        textSuperManager.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
+                builder.setView(view);
+
+                EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
+                TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
+                TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
+
+                if(facility.super_manager == "" || facility.super_manager == null){
+                    eTextDialogInput.setHint("담당자");
+                } else {
+                    eTextDialogInput.setText(facility.super_manager);
+                }
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+                textDialogCancel5.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        API.APICallback apiCallback = new API.APICallback() {
+                            @Override
+                            public void onSuccess(Object data) {
+                                getFacility();
+                                dialog.dismiss();
+                                Toast.makeText(v.getContext(), "담당자 변경에 성공했습니다", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailed(String errorMsg) {
+                                dialog.dismiss();
+                                Toast.makeText(v.getContext(), "담당자 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        };
+
+                        API api = new API.Builder(apiCallback).build();
+
+                        api.editFacilitySuperManager(facility_id, eTextDialogInput.getText().toString());
+
+                    }
+                });
+            }
+        });
+
+        //설치목적 작성하기
+        textUsage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
+                builder.setView(view);
+
+                EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
+                TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
+                TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
+
+                if(facility.purpose == null || facility.purpose.isEmpty()) {
+                    eTextDialogInput.setHint("설치목적");
+                } else {
+                    eTextDialogInput.setText(facility.purpose);
+                }
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+                textDialogCancel5.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        API.APICallback apiCallback = new API.APICallback() {
+                            @Override
+                            public void onSuccess(Object data) {
+                                getFacility();
+                                dialog.dismiss();
+                                Toast.makeText(v.getContext(), "설치 목적 변경에 성공했습니다", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailed(String errorMsg) {
+                                dialog.dismiss();
+                                Toast.makeText(v.getContext(), "설치 목적 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        };
+
+                        API api = new API.Builder(apiCallback).build();
+
+                        api.editFacilityPurpose(facility_id, eTextDialogInput.getText().toString());
                     }
                 });
             }
@@ -366,15 +377,203 @@ public class FacilityActivity extends AppCompatActivity {
 
                                 Calendar calExpiredDate = Calendar.getInstance();
                                 calExpiredDate.set(pickerExpiredDate.getYear(), pickerExpiredDate.getMonth(), pickerExpiredDate.getDayOfMonth());
-                                facility.expired_at = calExpiredDate.getTime();
-                                CheckExpiredDate();
-                                dialog.dismiss();
+
+                                Date expired_at = calExpiredDate.getTime();
+
+                                API.APICallback apiCallback = new API.APICallback() {
+                                    @Override
+                                    public void onSuccess(Object data) {
+                                        getFacility();
+                                        dialog.dismiss();
+                                        Toast.makeText(v.getContext(), "만료일 등록에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMsg) {
+                                        dialog.dismiss();
+                                        Toast.makeText(v.getContext(), "만료일 등록에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                    }
+                                };
+
+                                API api = new API.Builder(apiCallback).build();
+
+                                api.editFacilityExpiredAt(facility_id, expired_at);
+
                             }
                         }
                     });
                 }
             }
         });
+
+        //작업계획버튼 눌렀을 때
+        buttonPlan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_plan, null);
+                builder.setView(view);
+
+                RadioGroup radioGroupPlan = view.findViewById(R.id.radioGroupPlan);
+                RadioButton radioStart = view.findViewById(R.id.radioStart);
+                RadioButton radioEdit = view.findViewById(R.id.radioEdit);
+                RadioButton radioDis = view.findViewById(R.id.radioDis);
+                Spinner spinPlanTeam = view.findViewById(R.id.spinPlanTeam);
+                TextView textDialogDelPlan = view.findViewById(R.id.textDialogDelPlan);
+                TextView textDialogCancel4 = view.findViewById(R.id.textDialogCancel4);
+                TextView textDialogSubmit4 = view.findViewById(R.id.textDialogSubmit4);
+
+                if(textTaskState.getText() == "설치전") {
+                    radioStart.toggle();
+                    radioEdit.setVisibility(View.GONE);
+                    radioDis.setVisibility(View.GONE);
+                } else {
+                    radioStart.setVisibility(View.GONE);
+                }
+
+                HintSpinnerAdapter<String> teamAdapter = new HintSpinnerAdapter<String>(v.getContext(), R.layout.spinner_item, new ArrayList<>());
+                teamAdapter.isBlack = true;
+                teamAdapter.setDropDownViewResource(R.layout.spinner_item_drop);
+                teamAdapter.add("김선재팀");
+                spinPlanTeam.setAdapter(teamAdapter);
+
+                AlertDialog dialog = builder.create();
+
+                textDialogDelPlan.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                textDialogCancel4.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                textDialogSubmit4.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+    }
+
+    private void getFacility() {
+        API.APICallback apiCallback = new API.APICallback() {
+            @Override
+            public void onSuccess(Object data) {
+
+                Facility facility = (Facility) data;
+
+                setFacility(facility);
+            }
+
+            @Override
+            public void onFailed(String errorMsg) {
+                Toast.makeText(FacilityActivity.this, "설비목록을 검색하는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+            }
+        };
+        API api = new API.Builder(apiCallback).build();
+
+        api.getFacility(facility_id);
+    }
+
+    private void setFacility(Facility facility) {
+        this.facility = facility;
+
+        onFacilityChanged();
+    }
+
+    private void onFacilityChanged() {
+
+        //해체완료dis_finished_at부터 설치시작started_at으로 (끝에서 앞으로) 날짜정보가 있는지 확인해나간다
+        //해체완료dis_finished_at이 있으면 해체완료 없으면 앞으로
+        //해체시작dis_started_at이 있으면 해체시작 없으면 앞으로
+        //수정완료edit_finished_at이 있으면 수정완료 없으면 앞으로
+        //수정시작edit_started_at이 있으면 수정시작 없으면 앞으로
+        //승인완료finished_at이 있으면 승인완료 없으면 앞으로
+        //설치중started_at이 있으면 설치중 없으면 설치전
+        if(facility.dis_finished_at != null) {
+            State("해체완료");
+        } else if(facility.dis_started_at != null) {
+            State("해체중");
+        } else if(facility.edit_finished_at != null) {
+            State("수정완료");
+        } else if(facility.edit_started_at != null) {
+            State("수정중");
+        } else if(facility.finished_at != null) {
+            State("승인완료");
+        } else  if(facility.started_at != null) {
+            State("설치중");
+        } else {
+            State("설치전");
+        }
+
+        textFacSerial.setText(facility.serial);
+        String stringFacType = "";
+        switch (facility.type) {
+            case 1:
+                stringFacType = "설비";
+                break;
+            case 2:
+                stringFacType = "전기";
+                break;
+            case 3:
+                stringFacType = "건축";
+                break;
+            case 4:
+                stringFacType = "기타";
+                break;
+            default:
+                break;
+        }
+        textFacType.setText(stringFacType);
+        textFacSubCon.setText(facility.subcontractor);
+        textFacSpot.setText(facility.building + " " + facility.floor + " " + facility.spot);
+
+        //만료일 체크
+        if(facility.finished_at != null){
+            if(facility.expired_at != null){
+                SimpleDateFormat expiredDateFormat = new SimpleDateFormat("~ yyyy. MM. dd");
+                textExpiredDate.setText(expiredDateFormat.format(facility.expired_at));
+                textExpiredDate.setTextColor(Color.BLACK);
+            }
+            else{
+                textExpiredDate.setText("만료일등록");
+                textExpiredDate.setTextColor(Color.BLUE);
+            }
+        } else
+            textExpiredDate.setText("");
+
+        if (textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
+            buttonPlan.setVisibility(View.VISIBLE);
+        } else {
+            buttonPlan.setVisibility(View.GONE);
+        }
+
+        if(facility.super_manager == null || facility.super_manager.isEmpty()) {
+            textSuperManager.setTextColor(Color.BLUE);
+            textSuperManager.setText("등록하기");
+        } else {
+            textSuperManager.setTextColor(Color.BLACK);
+            textSuperManager.setText(facility.super_manager);
+        }
+
+        if(facility.purpose == null || facility.purpose.isEmpty()) {
+            textUsage.setTextColor(Color.BLUE);
+            textUsage.setText("작성하기");
+        } else {
+            textUsage.setTextColor(Color.BLACK);
+            textUsage.setText(facility.purpose);
+        }
+
     }
 
 
@@ -403,10 +602,10 @@ public class FacilityActivity extends AppCompatActivity {
                 break;
         }
         textTaskState.setText(state);
-        CheckExpiredDate();
+
     }
 
-
+    /*
     //만료일 확인
     private void CheckExpiredDate() {
         if(facility.finished_at != null){
@@ -422,7 +621,7 @@ public class FacilityActivity extends AppCompatActivity {
         } else
             textExpiredDate.setText("");
     }
-
+    */
 
     //만료일등록의 Picker처리
     private void PickerExpiredDate(DatePicker pickerExpiredDate, int monthAfter) {
@@ -448,46 +647,6 @@ public class FacilityActivity extends AppCompatActivity {
         int month = Integer.parseInt(formatMonth.format(calExpiredDate.getTime())) - 1;
         int date = Integer.parseInt(formatDate.format(calExpiredDate.getTime()));
         pickerExpiredDate.updateDate(year, month, date);
-    }
-
-
-    //디버그 로그
-    private void CheckLog() {
-        String log_created_at = "NULL";
-        String log_started_at = "NULL";
-        String log_finished_at = "NULL";
-        String log_edit_started_at = "NULL";
-        String log_edit_finished_at = "NULL";
-        String log_dis_started_at = "NULL";
-        String log_dis_finished_at = "NULL";
-        String log_expired_at = "NULL";
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy. MM. dd");
-        if(facility.created_at != null)
-            log_created_at = simpleDateFormat.format(facility.created_at);
-        if(facility.started_at != null)
-            log_started_at = simpleDateFormat.format(facility.started_at);
-        if(facility.finished_at != null)
-            log_finished_at = simpleDateFormat.format(facility.finished_at);
-        if(facility.edit_started_at != null)
-            log_edit_started_at = simpleDateFormat.format(facility.edit_started_at);
-        if(facility.edit_finished_at != null)
-            log_edit_finished_at = simpleDateFormat.format(facility.edit_finished_at);
-        if(facility.dis_started_at != null)
-            log_dis_started_at = simpleDateFormat.format(facility.dis_started_at);
-        if(facility.dis_finished_at != null)
-            log_dis_finished_at = simpleDateFormat.format(facility.dis_finished_at);
-        if(facility.expired_at != null)
-            log_expired_at = simpleDateFormat.format(facility.expired_at);
-
-        Log.d("코딩하자", "created_at: " + log_created_at
-                 + ",     started_at: " + log_started_at
-                 + ",     finished_at: " + log_finished_at
-                 + ",     edit_started_at: " + log_edit_started_at
-                 + ",     edit_finished_at: " + log_edit_finished_at
-                 + ",     dis_started_at: " + log_dis_started_at
-                 + ",     dis_finished_at: " + log_dis_finished_at
-                 + ",     expired_at: " + log_expired_at);
     }
 
 }

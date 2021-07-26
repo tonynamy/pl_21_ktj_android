@@ -2,10 +2,13 @@ package com.example.facmanager;
 
 public class FacItem {
     String serialNum;
+    String location;
     String progress;
 
-    public FacItem(String serialNum, String progress) {
+    /*
+    public FacItem(String serialNum, String location, String progress) {
         this.serialNum = serialNum;
+        this.serialNum = location;
         this.progress = progress;
     }
 
@@ -17,6 +20,10 @@ public class FacItem {
         this.serialNum = serialNum;
     }
 
+    public String getLocation() { return location; }
+
+    public void setLocation(String location) { this.location = location; }
+
     public String getProgress() {
         return progress;
     }
@@ -24,5 +31,5 @@ public class FacItem {
     public void setProgress(String progress) {
         this.progress = progress;
     }
-
+    */
 }

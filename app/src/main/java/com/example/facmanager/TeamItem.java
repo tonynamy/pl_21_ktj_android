@@ -9,7 +9,6 @@ public class TeamItem {
     public TeamItem(String teamName) {
         this.teamName = teamName;
     }
-    */
 
     public String getTeamName() {
         return teamName;
@@ -18,4 +17,5 @@ public class TeamItem {
     public void setTeamName(String teamName) {
         this.teamName = teamName;
     }
+    */
 }

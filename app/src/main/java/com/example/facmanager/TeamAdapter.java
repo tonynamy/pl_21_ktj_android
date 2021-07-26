@@ -83,7 +83,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
         }
 
         public void onBind(TeamItem teamItem) {
-            txtTeamName.setText(teamItem.getTeamName());
+            txtTeamName.setText(teamItem.teamName);
         }
     }
 }

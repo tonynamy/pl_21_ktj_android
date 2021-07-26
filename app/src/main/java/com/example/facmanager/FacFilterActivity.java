@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.facmanager.models.Facility;
@@ -23,25 +25,17 @@ import java.util.Arrays;
 
 public class FacFilterActivity extends AppCompatActivity {
 
-    String facSerialNum;
-    String facType;
-    String facSubCont;
-    String facBuilding;
-    String facFloor;
-    String facSpot;
-
-
     ArrayList<String> types = new ArrayList<>();
     ArrayList<String> subcontractors = new ArrayList<>();
     ArrayList<String> buildings = new ArrayList<>();
     ArrayList<String> floors = new ArrayList<>();
     ArrayList<String> spots = new ArrayList<>();
 
-    FacFilterAdapter<String> adapterType;
-    FacFilterAdapter<String> adapterSubCont;
-    FacFilterAdapter<String> adapterBuilding;
-    FacFilterAdapter<String> adapterFloor;
-    FacFilterAdapter<String> adapterSpot;
+    HintSpinnerAdapter<String> adapterType;
+    HintSpinnerAdapter<String> adapterSubCont;
+    HintSpinnerAdapter<String> adapterBuilding;
+    HintSpinnerAdapter<String> adapterFloor;
+    HintSpinnerAdapter<String> adapterSpot;
 
     String place_id;
 
@@ -52,38 +46,38 @@ public class FacFilterActivity extends AppCompatActivity {
 
         place_id = getIntent().getStringExtra("place_id");
 
-        Spinner spinType = findViewById(R.id.spinType);
 
         //승인번호 에디트텍스트
         EditText eTextSerialNum = findViewById(R.id.eTextSerialNum);
 
         //공종스피너
-        adapterType = new FacFilterAdapter(this, R.layout.spinner_item, types);
-        adapterType.setDropDownViewResource(R.layout.spinner_item);
+        Spinner spinType = findViewById(R.id.spinType);
+        adapterType = new HintSpinnerAdapter(this, R.layout.spinner_item, types);
+        adapterType.setDropDownViewResource(R.layout.spinner_item_drop);
         spinType.setAdapter(adapterType);
 
         //사용업체 스피너
         Spinner spinSubcont = findViewById(R.id.spinSubcont);
-        adapterSubCont = new FacFilterAdapter(this, R.layout.spinner_item, subcontractors);
-        adapterSubCont.setDropDownViewResource(R.layout.spinner_item);
+        adapterSubCont = new HintSpinnerAdapter(this, R.layout.spinner_item, subcontractors);
+        adapterSubCont.setDropDownViewResource(R.layout.spinner_item_drop);
         spinSubcont.setAdapter(adapterSubCont);
 
         //설치동 스피너
         Spinner spinBuilding = findViewById(R.id.spinBuilding);
-        adapterBuilding = new FacFilterAdapter(this, R.layout.spinner_item, buildings);
-        adapterBuilding.setDropDownViewResource(R.layout.spinner_item);
+        adapterBuilding = new HintSpinnerAdapter(this, R.layout.spinner_item, buildings);
+        adapterBuilding.setDropDownViewResource(R.layout.spinner_item_drop);
         spinBuilding.setAdapter(adapterBuilding);
 
         //층 스피너
         Spinner spinFloor = findViewById(R.id.spinFloor);
-        adapterFloor = new FacFilterAdapter(this, R.layout.spinner_item, floors);
-        adapterFloor.setDropDownViewResource(R.layout.spinner_item);
+        adapterFloor = new HintSpinnerAdapter(this, R.layout.spinner_item, floors);
+        adapterFloor.setDropDownViewResource(R.layout.spinner_item_drop);
         spinFloor.setAdapter(adapterFloor);
 
         //설치위치 스피너
         Spinner spinSpot = findViewById(R.id.spinSpot);
-        adapterSpot = new FacFilterAdapter(this, R.layout.spinner_item, spots);
-        adapterSpot.setDropDownViewResource(R.layout.spinner_item);
+        adapterSpot = new HintSpinnerAdapter(this, R.layout.spinner_item, spots);
+        adapterSpot.setDropDownViewResource(R.layout.spinner_item_drop);
         spinSpot.setAdapter(adapterSpot);
 
 
@@ -91,7 +85,7 @@ public class FacFilterActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FacFilterActivity.this, FacListActivity.class);
+                Intent intent = new Intent(v.getContext(), FacListActivity.class);
 
                 String serial = eTextSerialNum.getText().toString().equals("") ? "" : eTextSerialNum.getText().toString();
 
@@ -128,7 +122,6 @@ public class FacFilterActivity extends AppCompatActivity {
                 intent.putExtra("building", building);
                 intent.putExtra("floor", floor);
                 intent.putExtra("spot", spot);
-
 
                 startActivity(intent);
             }

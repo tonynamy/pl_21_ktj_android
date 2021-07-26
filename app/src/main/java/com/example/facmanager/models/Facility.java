@@ -8,6 +8,8 @@ public class Facility {
     public String place_id;
     public String serial;
     public int type;
+    public String super_manager;
+    public String purpose;
     public String subcontractor;
     public String building;
     public String floor;
