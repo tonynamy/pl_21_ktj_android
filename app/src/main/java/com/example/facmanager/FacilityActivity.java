@@ -29,6 +29,11 @@ import java.util.Date;
 
 public class FacilityActivity extends AppCompatActivity {
 
+    int level;
+    String facility_id;
+    String super_manager_name;
+    Boolean is_manager_button;
+
     Facility facility = new Facility();
 
     TextView textFacSerial;
@@ -38,7 +43,8 @@ public class FacilityActivity extends AppCompatActivity {
 
     TextView textFacType;
     TextView textSuperManager;
-    TextView textUsage;
+    LinearLayout layoutPurpose;
+    TextView textPurpose;
     TextView textFacSubCon;
     TextView textFacSpot;
     TextView textExpiredDate;
@@ -47,14 +53,18 @@ public class FacilityActivity extends AppCompatActivity {
     Button buttonCreate;
     Button buttonEdit;
     Button buttonDisassem;
-    Button buttonPlan;
-
-    String facility_id;
+    Button buttonTaskPlan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facility);
+
+        //Intent Extra 값 받아오기
+        level = getIntent().getIntExtra("level", -2);
+        facility_id = getIntent().getStringExtra("facility_id");
+        super_manager_name = getIntent().getStringExtra("super_manager_name");
+        is_manager_button = getIntent().getBooleanExtra("is_manager_button", false);
 
         //뷰 불러오기
         textFacSerial = findViewById(R.id.textFacSerial);
@@ -64,7 +74,8 @@ public class FacilityActivity extends AppCompatActivity {
 
         textFacType = findViewById(R.id.textFacType);
         textSuperManager = findViewById(R.id.textSuperManager);
-        textUsage = findViewById(R.id.textUsage);
+        layoutPurpose = findViewById(R.id.layoutPurpose);
+        textPurpose = findViewById(R.id.textPurpose);
         textFacSubCon = findViewById(R.id.textFacSubCon);
         textFacSpot = findViewById(R.id.textFacSpot);
         textExpiredDate = findViewById(R.id.textExpiredDate);
@@ -73,7 +84,7 @@ public class FacilityActivity extends AppCompatActivity {
         buttonCreate = findViewById(R.id.buttonCreate);
         buttonEdit = findViewById(R.id.buttonEdit);
         buttonDisassem = findViewById(R.id.buttonDisassem);
-        buttonPlan = findViewById(R.id.buttonTaskPlan);
+        buttonTaskPlan = findViewById(R.id.buttonTaskPlan);
 
 
         //SeekBar에 터치가 안되게
@@ -84,10 +95,10 @@ public class FacilityActivity extends AppCompatActivity {
             }
         });
 
-        facility_id = getIntent().getStringExtra("facility_id");
-
+        //Facility 정보 가져오기
         getFacility();
 
+        /*
         API.APICallback apiCallback = new API.APICallback() {
             @Override
             public void onSuccess(Object data) {
@@ -105,18 +116,27 @@ public class FacilityActivity extends AppCompatActivity {
         API api = new API.Builder(apiCallback).build();
 
         api.getFacility(facility_id);
+        */
 
-
-        //유저레벨에 따라 뷰가 다르게 보임
-        //level 2이상일때
-        buttonFacManger.setVisibility(View.VISIBLE);
+        //권한이 필요한 모든 뷰 비활성화
+        buttonFacManger.setVisibility(View.GONE);
         layoutTeamLeader.setVisibility(View.GONE);
-        buttonPlan.setVisibility(View.VISIBLE);
-        //else
-        //buttonFacManger.setVisibility(View.GONE);
-        //layoutTeamLeader.setVisibility(View.VISIBLE);
-        //buttonPlan.setVisibility(View.GONE);
+        buttonTaskPlan.setVisibility(View.GONE);
 
+        //관리자 버튼으로 왔을시
+        if(is_manager_button) {
+            buttonFacManger.setVisibility(View.VISIBLE);
+            buttonTaskPlan.setVisibility(View.VISIBLE);
+        } else if(super_manager_name.isEmpty()) {
+            layoutTeamLeader.setVisibility(View.VISIBLE);
+        } else {
+            if(level == 2){
+                buttonFacManger.setVisibility(View.VISIBLE);
+                buttonTaskPlan.setVisibility(View.VISIBLE);
+            } else if(level == 1) {
+                layoutTeamLeader.setVisibility(View.VISIBLE);
+            }
+        }
 
         //상태변경 버튼 눌렀을때
         buttonFacManger.setOnClickListener(new View.OnClickListener() {
@@ -212,115 +232,123 @@ public class FacilityActivity extends AppCompatActivity {
         textSuperManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
-                builder.setView(view);
+                //직원등급이 관리자(2), 최고관리자(3), 어드민(4)일때
+                if(level == 2 || level == 3 || level == 4) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
+                    builder.setView(view);
 
-                EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
-                TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
-                TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
-
-                if(facility.super_manager == "" || facility.super_manager == null){
+                    EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
+                    TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
+                    TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
                     eTextDialogInput.setHint("담당자");
-                } else {
-                    eTextDialogInput.setText(facility.super_manager);
+
+                    if(!facility.super_manager.isEmpty()){
+                        eTextDialogInput.setText(facility.super_manager);
+                    }
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                    textDialogCancel5.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            API.APICallback apiCallback = new API.APICallback() {
+                                @Override
+                                public void onSuccess(Object data) {
+                                    getFacility();
+                                    dialog.dismiss();
+                                    Toast.makeText(v.getContext(), "담당자 변경에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMsg) {
+                                    dialog.dismiss();
+                                    Toast.makeText(v.getContext(), "담당자 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                }
+                            };
+
+                            API api = new API.Builder(apiCallback).build();
+
+                            api.editFacilitySuperManager(facility_id, eTextDialogInput.getText().toString());
+                        }
+                    });
                 }
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-                textDialogCancel5.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        API.APICallback apiCallback = new API.APICallback() {
-                            @Override
-                            public void onSuccess(Object data) {
-                                getFacility();
-                                dialog.dismiss();
-                                Toast.makeText(v.getContext(), "담당자 변경에 성공했습니다", Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onFailed(String errorMsg) {
-                                dialog.dismiss();
-                                Toast.makeText(v.getContext(), "담당자 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        };
-
-                        API api = new API.Builder(apiCallback).build();
-
-                        api.editFacilitySuperManager(facility_id, eTextDialogInput.getText().toString());
-
-                    }
-                });
             }
         });
 
         //설치목적 작성하기
-        textUsage.setOnClickListener(new View.OnClickListener() {
+        textPurpose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
-                builder.setView(view);
+                //직원등급이 관리자(2), 최고관리자(3), 어드민(4)일때
+                if(level == 2 || level == 3 || level == 4) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
+                    builder.setView(view);
 
-                EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
-                TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
-                TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
-
-                if(facility.purpose == null || facility.purpose.isEmpty()) {
+                    EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
+                    TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
+                    TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
                     eTextDialogInput.setHint("설치목적");
-                } else {
-                    eTextDialogInput.setText(facility.purpose);
+
+                    if(!facility.purpose.isEmpty()){
+                        eTextDialogInput.setText(facility.purpose);
+                    }
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                    textDialogCancel5.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            API.APICallback apiCallback = new API.APICallback() {
+                                @Override
+                                public void onSuccess(Object data) {
+                                    getFacility();
+                                    dialog.dismiss();
+                                    Toast.makeText(v.getContext(), "설치목적 변경에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMsg) {
+                                    dialog.dismiss();
+                                    Toast.makeText(v.getContext(), "설치목적 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                }
+                            };
+
+                            API api = new API.Builder(apiCallback).build();
+
+                            api.editFacilityPurpose(facility_id, eTextDialogInput.getText().toString());
+                        }
+                    });
                 }
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-                textDialogCancel5.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        API.APICallback apiCallback = new API.APICallback() {
-                            @Override
-                            public void onSuccess(Object data) {
-                                getFacility();
-                                dialog.dismiss();
-                                Toast.makeText(v.getContext(), "설치 목적 변경에 성공했습니다", Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onFailed(String errorMsg) {
-                                dialog.dismiss();
-                                Toast.makeText(v.getContext(), "설치 목적 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        };
-
-                        API api = new API.Builder(apiCallback).build();
-
-                        api.editFacilityPurpose(facility_id, eTextDialogInput.getText().toString());
-                    }
-                });
             }
         });
 
-
-        //만료일등록 글자를 눌렀을때
+        //만료일등록을 눌렀을때
         textExpiredDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -408,7 +436,7 @@ public class FacilityActivity extends AppCompatActivity {
         });
 
         //작업계획버튼 눌렀을 때
-        buttonPlan.setOnClickListener(new View.OnClickListener() {
+        buttonTaskPlan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -432,9 +460,7 @@ public class FacilityActivity extends AppCompatActivity {
                     radioStart.setVisibility(View.GONE);
                 }
 
-                TaskPlanTeamAdapter teamAdapter = new TaskPlanTeamAdapter(v.getContext(), R.layout.spinner_item, new ArrayList<>());
-
-                teamAdapter.isBlack = true;
+                TeamSpinnerAdapter teamAdapter = new TeamSpinnerAdapter(v.getContext(), R.layout.spinner_item, new ArrayList<>());
                 teamAdapter.setDropDownViewResource(R.layout.spinner_item_drop);
 
                 API.APICallback apiCallback = new API.APICallback() {
@@ -448,12 +474,11 @@ public class FacilityActivity extends AppCompatActivity {
                         }
 
                         teamAdapter.notifyDataSetChanged();
-
                     }
 
                     @Override
                     public void onFailed(String errorMsg) {
-                        Toast.makeText(FacilityActivity.this, "팀목록을 불러오는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), "팀목록을 불러오는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
                     }
                 };
 
@@ -487,7 +512,7 @@ public class FacilityActivity extends AppCompatActivity {
                         String team_id = teamAdapter.getItem(spinPlanTeam.getSelectedItemPosition()).id;
                         int plan = -1;
 
-                        if(radioStart.isChecked()) {
+                        if(radioStart.isChecked()){
                             plan = 1;
                         } else if(radioEdit.isChecked()) {
                             plan = 2;
@@ -498,13 +523,12 @@ public class FacilityActivity extends AppCompatActivity {
                         API.APICallback apiCallback = new API.APICallback() {
                             @Override
                             public void onSuccess(Object data) {
-                                Toast.makeText(FacilityActivity.this, "작업 계획을 수정하는데 성공했습니다.", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
+                                Toast.makeText(v.getContext(), "작업계획 수정에 성공했습니다", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onFailed(String errorMsg) {
-                                Toast.makeText(FacilityActivity.this, "작업 계획을 수정하는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(v.getContext(), "작업계획 수정에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         };
 
@@ -592,6 +616,21 @@ public class FacilityActivity extends AppCompatActivity {
         textFacSubCon.setText(facility.subcontractor);
         textFacSpot.setText(facility.building + " " + facility.floor + " " + facility.spot);
 
+        if(facility.super_manager.isEmpty()) {
+            textSuperManager.setTextColor(Color.BLUE);
+            textSuperManager.setText("등록하기");
+        } else {
+            textSuperManager.setTextColor(Color.BLACK);
+            textSuperManager.setText(facility.super_manager);
+        }
+
+        if(facility.purpose.isEmpty()) {
+            layoutPurpose.setVisibility(View.GONE);
+        } else {
+            layoutPurpose.setVisibility(View.VISIBLE);
+            textPurpose.setText(facility.purpose);
+        }
+
         //만료일 체크
         if(facility.finished_at != null){
             if(facility.expired_at != null){
@@ -606,28 +645,13 @@ public class FacilityActivity extends AppCompatActivity {
         } else
             textExpiredDate.setText("");
 
-        if (textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
-            buttonPlan.setVisibility(View.VISIBLE);
-        } else {
-            buttonPlan.setVisibility(View.GONE);
+        if(is_manager_button){
+            if (textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
+                buttonTaskPlan.setVisibility(View.VISIBLE);
+            } else {
+                buttonTaskPlan.setVisibility(View.GONE);
+            }
         }
-
-        if(facility.super_manager == null || facility.super_manager.isEmpty()) {
-            textSuperManager.setTextColor(Color.BLUE);
-            textSuperManager.setText("등록하기");
-        } else {
-            textSuperManager.setTextColor(Color.BLACK);
-            textSuperManager.setText(facility.super_manager);
-        }
-
-        if(facility.purpose == null || facility.purpose.isEmpty()) {
-            textUsage.setTextColor(Color.BLUE);
-            textUsage.setText("작성하기");
-        } else {
-            textUsage.setTextColor(Color.BLACK);
-            textUsage.setText(facility.purpose);
-        }
-
     }
 
 

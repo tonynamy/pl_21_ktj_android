@@ -23,7 +23,6 @@ import java.util.Map;
 public class RequestHttpUrlConnection {
 
     private static RequestHttpUrlConnection mInstance = null;
-    //private static CookieManager cookieManager = new CookieManager();
 
     private String CharSet = "UTF-8";
 
@@ -34,9 +33,6 @@ public class RequestHttpUrlConnection {
     public static RequestHttpUrlConnection getInstance() {
 
         if(mInstance == null) mInstance = new RequestHttpUrlConnection();
-
-        //CookieHandler.setDefault(cookieManager);
-        //cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 
         return mInstance;
 
@@ -55,31 +51,13 @@ public class RequestHttpUrlConnection {
 
                 stringBuffer.append(key).append("=").append(value).append("&");
 
-
             }
-
         }
 
         return stringBuffer.toString();
     }
 
     private String getCookieStr() {
-
-        /*List<HttpCookie> cookieList = CookieHandler.getDefault().getCookieStore().getCookies();
-
-        if(cookieList.size() > 0) {
-
-            StringBuffer cookieStringBuffer = new StringBuffer();
-
-            for(HttpCookie cookie : this.cookieManager.getCookieStore().getCookies()) {
-
-                cookieStringBuffer.append(cookie.getName()).append("=").append(cookie.getValue()).append(';');
-
-            }
-
-            return cookieStringBuffer.toString();
-
-        }*/
 
         List<HttpCookie> cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore().getCookies();
         for (HttpCookie cookie : cookies) {
@@ -93,7 +71,6 @@ public class RequestHttpUrlConnection {
     public String requestGET(String _url, ContentValues _params) {
 
         // 요청부
-
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
@@ -167,7 +144,6 @@ public class RequestHttpUrlConnection {
     public String requestPOST(String _url, ContentValues _params) {
 
         // 요청부
-
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
@@ -176,8 +152,6 @@ public class RequestHttpUrlConnection {
             URL url = new URL(_url);
 
             urlConnection = (HttpURLConnection) url.openConnection();
-
-            //CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
             // Connection 속성
             urlConnection.setRequestMethod("POST");

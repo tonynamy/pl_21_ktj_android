@@ -38,7 +38,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:orientation="vertical">
 
             <SeekBar
@@ -60,6 +60,7 @@
                 android:id="@+id/buttonFacManger"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/buttonbox"
                 android:text="상태변경"
                 android:textSize="24sp"
@@ -137,11 +138,13 @@
                         android:id="@+id/textSuperManager"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:layout_weight="1.9"
                         android:padding="4dp"
                         android:text="등록하기"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="24sp"
+                        app:autoSizeTextType="uniform" />
 
                 </LinearLayout>
 
@@ -151,37 +154,46 @@
                     android:background="@color/black" />
 
                 <LinearLayout
+                    android:id="@+id/layoutPurpose"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp">
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:padding="4dp"
-                        android:text="설치목적"
-                        android:textColor="@color/black"
-                        android:textSize="24sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp">
 
-                    <TextView
-                        android:id="@+id/textUsage"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.9"
-                        android:padding="4dp"
-                        android:text="작성하기"
-                        android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="4dp"
+                            android:text="설치목적"
+                            android:textColor="@color/black"
+                            android:textSize="24sp" />
 
+                        <TextView
+                            android:id="@+id/textPurpose"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1.9"
+                            android:padding="4dp"
+                            android:text="작성하기"
+                            android:textColor="@color/black"
+                            android:textSize="24sp"
+                            app:autoSizeTextType="uniform" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1.2dp"
+                        android:background="@color/black" />
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1.2dp"
-                    android:background="@color/black" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -204,10 +216,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.9"
+                        android:gravity="center_vertical"
                         android:padding="4dp"
                         android:text="업체"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="24sp"
+                        app:autoSizeTextType="uniform" />
                 </LinearLayout>
 
                 <View
@@ -236,10 +250,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1.9"
+                        android:gravity="center_vertical"
                         android:padding="4dp"
                         android:text="위치"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="24sp"
+                        app:autoSizeTextType="uniform" />
                 </LinearLayout>
 
                 <View
@@ -291,7 +307,9 @@
             android:layout_marginLeft="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginRight="12dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
 
             <TextView
                 android:id="@+id/textView8"
@@ -309,10 +327,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/textbox"
-                android:ems="10"
                 android:inputType="number"
                 android:text="0"
-                android:textSize="24sp" />
+                android:textSize="24sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

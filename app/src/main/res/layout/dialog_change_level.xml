@@ -6,24 +6,45 @@
     android:padding="24dp">
 
     <TextView
-        android:id="@+id/txtFindMyTeam"
+        android:id="@+id/textLevelUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="내팀조회"
+        android:text="직원등급"
         android:textColor="@color/black"
-        android:textSize="24sp" />
+        android:textSize="30sp" />
 
     <TextView
-        android:id="@+id/txtFindAllTeam"
+        android:id="@+id/textLevelAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="전체팀조회"
+        android:paddingLeft="8dp"
+        android:text="최고관리자"
         android:textColor="@color/black"
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textDialogCancel2"
+        android:id="@+id/textLevelManager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:text="관리자"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textLevelTeamLeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:text="팀장"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textDialogCancel7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"

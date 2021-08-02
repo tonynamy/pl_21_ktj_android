@@ -9,19 +9,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.facmanager.models.Facility;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class TaskPeriodAdapter extends RecyclerView.Adapter<TaskPeriodAdapter.ViewHolder> {
 
-    ArrayList<TaskPeriodItem> taskPeriodItemList = new ArrayList<>();
+    ArrayList<Facility> facilityArrayList = new ArrayList<>();
 
-    public void addItem (TaskPeriodItem taskPeriodItem) {
-        taskPeriodItemList.add(taskPeriodItem);
+    public void addItem (Facility facility) {
+        facilityArrayList.add(facility);
     }
 
     @Override
     public int getItemViewType(int position) {
         return position;
+    }
+
+    public void clear() {
+        facilityArrayList.clear();
     }
 
     @NonNull
@@ -33,12 +41,12 @@ public class TaskPeriodAdapter extends RecyclerView.Adapter<TaskPeriodAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setItem(taskPeriodItemList.get(position));
+        holder.setItem(facilityArrayList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return taskPeriodItemList.size();
+        return facilityArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -53,14 +61,17 @@ public class TaskPeriodAdapter extends RecyclerView.Adapter<TaskPeriodAdapter.Vi
             txtPeriodState = itemView.findViewById(R.id.txtPeriodState);
         }
 
-        public void setItem(TaskPeriodItem taskPeriodItem) {
+        public void setItem(Facility facility) {
 
-            txtPeriodSerialNum.setText(taskPeriodItem.serialNum);
-            txtPeriodState.setText(taskPeriodItem.state);
+            txtPeriodSerialNum.setText(facility.serial);
 
-            //만료일이 지났을때는 빨간색으로 "만료" 표시
-            if(txtPeriodState.getText() == "만료") {
+            if(facility.expired_at != null && facility.expired_at.after(Calendar.getInstance().getTime())) {
+                txtPeriodState.setText("만료");
                 txtPeriodState.setTextColor(Color.RED);
+            } else {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy. MM. dd.");
+                String dateString = simpleDateFormat.format(facility.expired_at);
+                txtPeriodState.setText(dateString);
             }
 
         }

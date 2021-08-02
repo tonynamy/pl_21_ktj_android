@@ -4,15 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MenuActivity">
+    tools:context=".AdminActivity">
 
     <TextView
-        android:id="@+id/txtInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="로그인 정보"
-        android:textSize="18sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="최고관리자메뉴"
+        android:textColor="@color/black"
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,52 +32,33 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/btnAttendMenu"
+            android:id="@+id/btnPlaceSet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/buttonbox"
-            android:text="출퇴근관리"
+            android:text="현장관리"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 
         <Button
-            android:id="@+id/btnTeamLeaderMenu"
+            android:id="@+id/btnUserLevelSet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/buttonbox"
-            android:text="팀장님메뉴"
+            android:text="직원등급관리"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 
         <Button
-            android:id="@+id/btnManagerMenu"
+            android:id="@+id/btnChangePassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:background="@drawable/buttonbox"
-            android:text="관리자메뉴"
+            android:text="비밀번호변경"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 
-        <Button
-            android:id="@+id/btnSuperManager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/buttonbox"
-            android:text="담당자별 조회"
-            android:textSize="24sp"
-            app:backgroundTint="@null" />
-
-        <Button
-            android:id="@+id/btnAdminMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/buttonbox"
-            android:text="최고관리자 메뉴"
-            android:textSize="24sp"
-            app:backgroundTint="@null" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

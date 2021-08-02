@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //레이아웃에서 불러오기
+        //뷰에서 가져오기
         spinPlace = findViewById(R.id.spinPlace);
         et_username = findViewById(R.id.tbxName);
         et_birthday = findViewById(R.id.tbxBirth);
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences userPrefs = getSharedPreferences("userInfo", MODE_PRIVATE);
         Boolean isUserInfo = userPrefs.getBoolean("isUserInfo", false);
         int userPlaceInPrefs = userPrefs.getInt("userPlace", 0);
-        Log.d("코딩하자", String.valueOf(userPlaceInPrefs));
         String userNameInPrefs = userPrefs.getString("userName", "");
         String userBirthdayInPrefs = userPrefs.getString("userBirthday", "");
 
@@ -153,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                     API api = new API.Builder(apiCallback).build();
 
                     api.login(place_id, username, birthday);
+
                 } else {
                     Toast.makeText(v.getContext(), "현장명을 선택해주세요.", Toast.LENGTH_SHORT).show();
                 }

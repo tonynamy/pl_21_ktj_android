@@ -3,27 +3,29 @@ package com.example.facmanager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.facmanager.models.Facility;
 import com.example.facmanager.models.FacilityInfo;
-import com.example.facmanager.models.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FacFilterActivity extends AppCompatActivity {
+
+    int level;
+    String place_id;
+    String super_manager_name;
+    Boolean is_manager_button;
+
+    TextView textFacFilterTitle;
+    EditText eTextSerialNum;
+    Button btnSearch;
 
     ArrayList<String> types = new ArrayList<>();
     ArrayList<String> subcontractors = new ArrayList<>();
@@ -37,18 +39,30 @@ public class FacFilterActivity extends AppCompatActivity {
     HintSpinnerAdapter<String> adapterFloor;
     HintSpinnerAdapter<String> adapterSpot;
 
-    String place_id;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fac_filter);
 
+        //Intent에서 Extra값 받아오기
+        level = getIntent().getIntExtra("level", -2);
         place_id = getIntent().getStringExtra("place_id");
+        super_manager_name = getIntent().getStringExtra("super_manager_name");
+        if(super_manager_name == null){ super_manager_name = ""; }
+        is_manager_button = getIntent().getBooleanExtra("is_manager_button", false);
 
+        //뷰 가져오기
+        textFacFilterTitle = findViewById(R.id.textFacFilterTitle);
+        eTextSerialNum = findViewById(R.id.eTextSerialNum);
+        btnSearch = findViewById(R.id.btnSearch);
 
-        //승인번호 에디트텍스트
-        EditText eTextSerialNum = findViewById(R.id.eTextSerialNum);
+        if(is_manager_button){
+            textFacFilterTitle.setText("관리자메뉴");
+        } else if(!super_manager_name.isEmpty()) {
+            textFacFilterTitle.setText(super_manager_name + " 담당자 조회");
+        } else {
+            textFacFilterTitle.setText("팀장님메뉴");
+        }
 
         //공종스피너
         Spinner spinType = findViewById(R.id.spinType);
@@ -80,8 +94,7 @@ public class FacFilterActivity extends AppCompatActivity {
         adapterSpot.setDropDownViewResource(R.layout.spinner_item_drop);
         spinSpot.setAdapter(adapterSpot);
 
-
-        Button btnSearch = findViewById(R.id.btnSearch);
+        //검색버튼 눌렀을시
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +128,10 @@ public class FacFilterActivity extends AppCompatActivity {
                     spot = spinSpot.getSelectedItem().toString();
                 }
 
+                intent.putExtra("level", level);
                 intent.putExtra("place_id", place_id);
+                intent.putExtra("super_manager_name", super_manager_name);
+                intent.putExtra("is_manager_button", is_manager_button);
                 intent.putExtra("serial", serial);
                 intent.putExtra("type", type);
                 intent.putExtra("subcontractor", subcontractor);
@@ -187,7 +203,7 @@ public class FacFilterActivity extends AppCompatActivity {
 
         API api = new API.Builder(apiCallback).build();
 
-        api.getFacilityInfo();
+        api.getFacilitySearchInfo();
 
     }
 }

@@ -13,8 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FacManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".TaskListActivity"></activity>
-        <activity android:name=".TeamLeaderActivity" />
+        <activity android:name=".PasswordActivity"></activity>
+        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".PlaceDeleteActivity" />
+        <activity android:name=".PlaceEditActivity" />
+        <activity android:name=".AdminActivity" />
+        <activity android:name=".TeamPlanListActivity" />
+        <activity android:name=".TaskListActivity" />
+        <activity android:name=".PlaceActivity" />
         <activity android:name=".FacilityActivity" />
         <activity android:name=".AttendFilterActivity" />
         <activity android:name=".FacListActivity" />

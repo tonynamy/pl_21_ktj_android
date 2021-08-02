@@ -8,20 +8,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.facmanager.models.Facility;
+
 import java.util.ArrayList;
 
 public class TaskPlanAdapter extends RecyclerView.Adapter<TaskPlanAdapter.ViewHolder> {
 
-    ArrayList<TaskPlanItem> taskPlanItemList = new ArrayList<>();
+    ArrayList<Facility> facilityArrayList = new ArrayList<>();
 
-
-    public void addItem (TaskPlanItem taskPlanItem) {
-        taskPlanItemList.add(taskPlanItem);
+    public void addItem (Facility Facility) {
+        facilityArrayList.add(Facility);
     }
 
     @Override
     public int getItemViewType(int position) {
         return position;
+    }
+
+    public void clear() {
+        facilityArrayList.clear();
     }
 
     @NonNull
@@ -33,12 +38,12 @@ public class TaskPlanAdapter extends RecyclerView.Adapter<TaskPlanAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setItem(taskPlanItemList.get(position));
+        holder.setItem(facilityArrayList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return taskPlanItemList.size();
+        return facilityArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,10 +60,12 @@ public class TaskPlanAdapter extends RecyclerView.Adapter<TaskPlanAdapter.ViewHo
             txtTaskTeamName = itemView.findViewById(R.id.txtTaskTeamName);
         }
 
-        public void setItem(TaskPlanItem taskPlanItem) {
-            txtTaskSerialNum.setText(taskPlanItem.serialNum);
-            txtTaskLocation.setText(taskPlanItem.location);
-            txtTaskTeamName.setText(taskPlanItem.teamName);
+        public void setItem(Facility facility) {
+
+            txtTaskSerialNum.setText(facility.serial);
+            txtTaskLocation.setText(facility.building + " " + facility.floor  + " " + facility.spot);
+            txtTaskTeamName.setText(facility.taskPlan.team.name);
+
         }
     }
 }

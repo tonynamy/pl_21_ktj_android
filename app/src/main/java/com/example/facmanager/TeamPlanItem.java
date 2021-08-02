@@ -1,8 +1,7 @@
 package com.example.facmanager;
 
-public class TaskPeriodItem {
-    
+public class TeamPlanItem {
     String serialNum;
+    String location;
     String state;
-    
 }

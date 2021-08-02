@@ -23,4 +23,6 @@ public class Facility {
     public Date expired_at;
     public Date created_at;
 
+    public TaskPlan taskPlan;
+
 }

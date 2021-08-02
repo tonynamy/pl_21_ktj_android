@@ -6,24 +6,35 @@
     android:padding="24dp">
 
     <TextView
-        android:id="@+id/txtFindMyTeam"
+        android:id="@+id/textPlaceName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="내팀조회"
+        android:text="현장명"
         android:textColor="@color/black"
-        android:textSize="24sp" />
+        android:textSize="30sp" />
 
     <TextView
-        android:id="@+id/txtFindAllTeam"
+        android:id="@+id/textChangePlaceName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="전체팀조회"
+        android:paddingLeft="8dp"
+        android:text="현장명변경"
         android:textColor="@color/black"
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textDialogCancel2"
+        android:id="@+id/textDeletePlace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:text="현장기록삭제"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textDialogCancel6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"

@@ -9,4 +9,5 @@ public class UserAttendance {
     public String birthday;
     public Date date;
     public int type;
+
 }

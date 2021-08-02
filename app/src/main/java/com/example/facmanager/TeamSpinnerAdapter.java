@@ -7,38 +7,39 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.facmanager.models.Team;
+
 import java.util.List;
 
-public class HintSpinnerAdapter<T> extends ArrayAdapter<T> {
+public class TeamSpinnerAdapter extends ArrayAdapter<Team> {
 
-    public Boolean isBlack = false;
+    List<Team> object;
 
-    public HintSpinnerAdapter(Context context, int resource, List<T> objects) {
+    public TeamSpinnerAdapter(Context context, int resource, List<Team> objects) {
         super(context, resource, objects);
+
+        this.object = objects;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         TextView textView = (TextView) view;
+        Team team = object.get(position);
+        textView.setText(team.name);
+        textView.setTextColor(Color.BLACK);
 
-        if(position > 0 || isBlack){
-            textView.setTextColor(Color.BLACK);
-        }
         return view;
     }
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         View view = super.getDropDownView(position, convertView, parent);
-
         TextView textView = (TextView) view;
-
-        if(position > 0 || isBlack){
-            textView.setTextColor(Color.BLACK);
-        }
+        Team team = object.get(position);
+        textView.setText(team.name);
+        textView.setTextColor(Color.BLACK);
 
         return view;
     }
-
 }

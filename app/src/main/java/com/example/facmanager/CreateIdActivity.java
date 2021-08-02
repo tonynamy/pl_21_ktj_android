@@ -33,8 +33,9 @@ public class CreateIdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_id);
 
         Spinner spinConstruction = findViewById(R.id.spinCreatePlace);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, new ArrayList<>());
-        adapter.setDropDownViewResource(R.layout.spinner_item);
+        HintSpinnerAdapter<String> adapter = new HintSpinnerAdapter<String>(this, R.layout.spinner_item, new ArrayList<>());
+        adapter.setDropDownViewResource(R.layout.spinner_item_drop);
+        adapter.isBlack = true;
         spinConstruction.setAdapter(adapter);
 
         EditText et_username = findViewById(R.id.tbxCreateUserName);

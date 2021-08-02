@@ -8,6 +8,7 @@ import com.example.facmanager.models.Auth;
 import com.example.facmanager.models.Facility;
 import com.example.facmanager.models.FacilityInfo;
 import com.example.facmanager.models.Place;
+import com.example.facmanager.models.TaskPlan;
 import com.example.facmanager.models.Team;
 import com.example.facmanager.models.UserAttendance;
 
@@ -38,6 +39,7 @@ public class API {
     private static String ADD_USER = ROOT_URL + "add_user";
     private static String FACILITY_INFO = ROOT_URL + "facility_info";
     private static String FACILITY_SEARCH = ROOT_URL + "facility_search";
+    private static String FACILITY_SEARCH_INFO = ROOT_URL + "facility_search_info";
     private static String FACILITY = ROOT_URL + "facility";
     private static String FACILITY_EDIT_STATE = ROOT_URL + "facility_edit_state";
     private static String FACILITY_EDIT_EXPIRED_AT = ROOT_URL + "facility_edit_expired_at";
@@ -442,9 +444,9 @@ public class API {
 
     }
 
-    public void getFacilityInfo() {
+    public void getFacilitySearchInfo() {
 
-        String url = FACILITY_INFO;
+        String url = FACILITY_SEARCH_INFO;
 
         NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
 
@@ -475,6 +477,155 @@ public class API {
                     facilityInfo.spots = jsonObject.getString("spot").split(",");
 
                     apiCallback.onSuccess(facilityInfo);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, null, true, networkCallback).execute();
+
+    }
+
+    private Facility getFacilityFromJsonObject(JSONObject jsonObject) {
+        return getFacilityFromJsonObject(jsonObject, false);
+    }
+
+    private Facility getFacilityFromJsonObject(JSONObject jsonObject, Boolean taskplan) {
+
+        Facility facility = new Facility();
+
+        try {
+
+            String id = jsonObject.getString("id");
+            String place_id = jsonObject.getString("place_id");
+            String serial = jsonObject.getString("serial");
+            String type = jsonObject.getString("type");
+            String subcontractor = jsonObject.getString("subcontractor");
+            String building = jsonObject.getString("building");
+            String floor = jsonObject.getString("floor");
+            String spot = jsonObject.getString("spot");
+            String started_at = jsonObject.getString("started_at");
+            String finished_at = jsonObject.getString("finished_at");
+            String edit_started_at = jsonObject.getString("edit_started_at");
+            String edit_finished_at = jsonObject.getString("edit_finished_at");
+            String dis_started_at = jsonObject.getString("dis_started_at");
+            String dis_finished_at = jsonObject.getString("dis_finished_at");
+            String expired_at = jsonObject.getString("expired_at");
+            String created_at = jsonObject.getString("created_at");
+
+            facility.id = id;
+            facility.place_id = place_id;
+            facility.serial = serial;
+            facility.type = Integer.parseInt(type);
+            facility.subcontractor = subcontractor;
+            facility.building = building;
+            facility.floor = floor;
+            facility.spot = spot;
+
+            facility.started_at = getDateFromString(started_at);
+            facility.finished_at = getDateFromString(finished_at);
+            facility.edit_started_at = getDateFromString(edit_started_at);
+            facility.edit_finished_at = getDateFromString(edit_finished_at);
+            facility.dis_started_at = getDateFromString(dis_started_at);
+            facility.dis_finished_at = getDateFromString(dis_finished_at);
+            facility.expired_at = getDateFromString(expired_at);
+            facility.created_at = getDateFromString(created_at);
+
+            if(taskplan) {
+
+                String plan = jsonObject.getString("taskplan");
+                String teamName = jsonObject.getString("team_name");
+
+                TaskPlan taskPlan = new TaskPlan();
+                Team team = new Team();
+
+                team.name = teamName;
+
+                taskPlan.team = team;
+                taskPlan.plan = plan;
+
+                facility.taskPlan = taskPlan;
+            }
+
+        } catch (Exception e) {
+
+        }
+
+        return facility;
+    }
+
+    private ArrayList<Facility> getFacilityListFromJsonArray(JSONArray jsonArray) {
+        return getFacilityListFromJsonArray(jsonArray, false);
+    }
+
+    private ArrayList<Facility> getFacilityListFromJsonArray(JSONArray jsonArray, Boolean taskplan) {
+
+        ArrayList<Facility> facilities = new ArrayList<>();
+
+        for(int i=0;i<jsonArray.length();i++) {
+
+            Facility facility = new Facility();
+
+            try {
+
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                facility = getFacilityFromJsonObject(jsonObject, taskplan);
+
+            } catch (Exception e) {}
+
+            facilities.add(facility);
+
+
+        }
+
+        return facilities;
+
+    }
+
+    public void getFacilityInfo(String place_id) {
+
+        String url = FACILITY_INFO;
+
+        ContentValues values = new ContentValues();
+
+        if(!place_id.equals("")) {
+            values.put("place_id", place_id);
+        }
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+
+                List<ArrayList<Facility>> response = new ArrayList<>(4);
+
+
+                try {
+
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    JSONArray expire = jsonObject.getJSONArray("expire");
+                    JSONArray construct = jsonObject.getJSONArray("construct");
+                    JSONArray destruct = jsonObject.getJSONArray("destruct");
+                    JSONArray edit = jsonObject.getJSONArray("edit");
+
+                    response.add(getFacilityListFromJsonArray(expire, true));
+                    response.add(getFacilityListFromJsonArray(construct, true));
+                    response.add(getFacilityListFromJsonArray(edit, true));
+                    response.add(getFacilityListFromJsonArray(destruct, true));
+
+
+                    apiCallback.onSuccess(response);
 
 
                 } catch (JSONException e) {
@@ -815,6 +966,5 @@ public class API {
         new NetworkTask(url, values, true, networkCallback).execute();
 
     }
-
 
 }
