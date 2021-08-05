@@ -6,12 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -20,6 +27,12 @@ public class MenuActivity extends AppCompatActivity {
     String place_name;
     String user_name;
     String team_id;
+
+    enum ButtonRight {
+        team_leader(1), manager(2);
+        int value;
+        ButtonRight(int value){ this.value = value; }
+    }
 
     TextView txtInfo;
     Button btnAttendMenu;
@@ -34,7 +47,7 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         //Intent에서 가져오기
-        level = getIntent().getIntExtra("level", 0);
+        level = getIntent().getIntExtra("level", -2);
         place_id = getIntent().getStringExtra("place_id");
         place_name = getIntent().getStringExtra("place_name");
         user_name = getIntent().getStringExtra("user_name");
@@ -52,6 +65,7 @@ public class MenuActivity extends AppCompatActivity {
         btnAttendMenu.setVisibility(View.GONE);
         btnTeamLeaderMenu.setVisibility(View.GONE);
         btnManagerMenu.setVisibility(View.GONE);
+        btnSuperManager.setVisibility(View.GONE);
         btnAdminMenu.setVisibility(View.GONE);
 
         //팀장(1), 관리자(2), 최고관리자(3), 어드민(4) 일때 출퇴근관리 조회
@@ -63,6 +77,10 @@ public class MenuActivity extends AppCompatActivity {
         //관리자(2), 최고관리자(3), 어드민(4) 일때 관리자메뉴 조회
         if (level == 2 || level == 3 || level == 4) {
             btnManagerMenu.setVisibility(View.VISIBLE);
+        }
+        //대기자가 아닐때 조회
+        if (level != 0) {
+            btnSuperManager.setVisibility(View.VISIBLE);
         }
         //최고관리자(3), 어드민(4) 일때 최고관리자메뉴 조회
         if (level == 3 || level == 4) {
@@ -81,6 +99,9 @@ public class MenuActivity extends AppCompatActivity {
             case 3:
             case 4:
                 role_name = "최고관리자";
+                break;
+            case -1:
+                role_name = "담당자";
                 break;
             default:
                 role_name = "대기자";
@@ -105,10 +126,11 @@ public class MenuActivity extends AppCompatActivity {
         btnTeamLeaderMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), TeamPlanListActivity.class);
+                Intent intent = new Intent(v.getContext(), TaskListTeamActivity.class);
                 intent.putExtra("level", level);
                 intent.putExtra("place_id", place_id);
                 intent.putExtra("team_id", team_id);
+                intent.putExtra("button_right", ButtonRight.team_leader);
                 startActivity(intent);
             }
         });
@@ -120,6 +142,7 @@ public class MenuActivity extends AppCompatActivity {
                 Intent intent = new Intent(v.getContext(), TaskListActivity.class);
                 intent.putExtra("level", level);
                 intent.putExtra("place_id", place_id);
+                intent.putExtra("button_right", ButtonRight.manager);
                 startActivity(intent);
             }
         });
@@ -128,57 +151,105 @@ public class MenuActivity extends AppCompatActivity {
         btnSuperManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_text_input, null);
-                builder.setView(view);
+                if(level == -1) {
+                    Intent intent = new Intent(v.getContext(), FacFilterActivity.class);
+                    intent.putExtra("level", level);
+                    intent.putExtra("super_manager_name", user_name);
+                    intent.putExtra("place_id", place_id);
+                    startActivity(intent);
 
-                //Shared Preferences에서 담당자 기록 가져오기
-                SharedPreferences superManagerPrefs = getSharedPreferences("superManagerInfo", MODE_PRIVATE);
-                String superManagerName = superManagerPrefs.getString("name", "");
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_select_spinner, null);
+                    builder.setView(view);
 
-                EditText eTextDialogInput = view.findViewById(R.id.eTextDialogInput);
-                TextView textDialogCancel5 = view.findViewById(R.id.textDialogCancel5);
-                TextView textDialogSubmit5 = view.findViewById(R.id.textDialogSubmit5);
-                eTextDialogInput.setHint("담당자 이름");
+                    //Shared Preferences에서 담당자 기록 가져오기
+                    //SharedPreferences superManagerPrefs = getSharedPreferences("superManagerInfo", MODE_PRIVATE);
+                    //String superManagerName = superManagerPrefs.getString("name", "");
 
-                if(!superManagerName.isEmpty()) {
-                    eTextDialogInput.setText(superManagerName);
-                }
+                    Spinner spinnerSelectDialog = view.findViewById(R.id.spinnerSelectDialog);
 
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                    TextView textDialogCancel8 = view.findViewById(R.id.textDialogCancel8);
+                    TextView textDialogSubmit8 = view.findViewById(R.id.textDialogSubmit8);
 
-                //취소 선택시
-                textDialogCancel5.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+                    //API에서 담당자정보 가져오기
+                    API.APICallback apiCallback = new API.APICallback() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            String[] _super_manager_names = ((String) data).split(",");
+                            ArrayList<String> super_manager_names = new ArrayList<>();
+                            super_manager_names.add(0, "담당자 이름");
+                            for(String string : _super_manager_names){
+                                super_manager_names.add(string);
+                            }
 
-                //확인 선택시
-                textDialogSubmit5.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(eTextDialogInput.getText().toString().isEmpty()) {
-                            Toast.makeText(v.getContext(), "담당자 이름이 없습니다", Toast.LENGTH_SHORT).show();
-                        } else {
-                            //Shared Preferences에 담당자 기록 저장
-                            SharedPreferences superManagerPrefs = getSharedPreferences("superManagerInfo", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = superManagerPrefs.edit();
-                            editor.putString("name", eTextDialogInput.getText().toString());
-                            editor.commit();
+                            HintSpinnerAdapter<String> adapter = new HintSpinnerAdapter<>(v.getContext(), R.layout.spinner_item, super_manager_names);
+                            adapter.setDropDownViewResource(R.layout.spinner_item_drop);
+                            spinnerSelectDialog.setAdapter(adapter);
 
-                            Intent intent = new Intent(v.getContext(), FacFilterActivity.class);
-                            intent.putExtra("level", level);
-                            intent.putExtra("super_manager_name", eTextDialogInput.getText().toString());
-                            intent.putExtra("place_id", place_id);
-                            startActivity(intent);
-                            dialog.dismiss();
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+
+                            //취소 선택시
+                            textDialogCancel8.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            //확인 선택시
+                            textDialogSubmit8.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(spinnerSelectDialog.getSelectedItemPosition() == 0) {
+                                        Toast.makeText(v.getContext(), "담당자가 선택되지 않았습니다", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Intent intent = new Intent(v.getContext(), FacFilterActivity.class);
+                                        intent.putExtra("level", level);
+                                        intent.putExtra("super_manager_name", spinnerSelectDialog.getSelectedItem().toString());
+                                        intent.putExtra("place_id", place_id);
+                                        startActivity(intent);
+                                        dialog.dismiss();
+                                    }
+
+                                /*
+                                if(eTextDialogInput.getText().toString().isEmpty()) {
+                                    Toast.makeText(v.getContext(), "담당자 이름이 없습니다", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    //Shared Preferences에 담당자 기록 저장
+                                    SharedPreferences superManagerPrefs = getSharedPreferences("superManagerInfo", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = superManagerPrefs.edit();
+                                    editor.putString("name", eTextDialogInput.getText().toString());
+                                    editor.commit();
+
+                                    Intent intent = new Intent(v.getContext(), FacFilterActivity.class);
+                                    intent.putExtra("level", level);
+                                    intent.putExtra("super_manager_name", eTextDialogInput.getText().toString());
+                                    intent.putExtra("place_id", place_id);
+                                    startActivity(intent);
+                                    dialog.dismiss();
+                                }
+                                */
+                                }
+                            });
+
+
+
+
+
+
                         }
-                    }
-                });
 
+                        @Override
+                        public void onFailed(String errorMsg) {
+                            Toast.makeText(v.getContext(), "담당자 정보를 가져오는데 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                        }
+                    };
+
+                    API api = new API.Builder(apiCallback).build();
+                    api.getSuperManagerInfo(place_id);
+                }
             }
         });
 
@@ -188,6 +259,7 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), AdminActivity.class);
                 intent.putExtra("level", level);
+                intent.putExtra("place_id", place_id);
                 startActivity(intent);
             }
         });

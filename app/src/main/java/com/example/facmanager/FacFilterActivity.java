@@ -21,7 +21,13 @@ public class FacFilterActivity extends AppCompatActivity {
     int level;
     String place_id;
     String super_manager_name;
-    Boolean is_manager_button;
+    int button_right;
+
+    enum ButtonRight {
+        team_leader(1), manager(2);
+        int value;
+        ButtonRight(int value){ this.value = value; }
+    }
 
     TextView textFacFilterTitle;
     EditText eTextSerialNum;
@@ -49,19 +55,19 @@ public class FacFilterActivity extends AppCompatActivity {
         place_id = getIntent().getStringExtra("place_id");
         super_manager_name = getIntent().getStringExtra("super_manager_name");
         if(super_manager_name == null){ super_manager_name = ""; }
-        is_manager_button = getIntent().getBooleanExtra("is_manager_button", false);
+        button_right = getIntent().getIntExtra("button_right", 0);
 
         //뷰 가져오기
         textFacFilterTitle = findViewById(R.id.textFacFilterTitle);
         eTextSerialNum = findViewById(R.id.eTextSerialNum);
         btnSearch = findViewById(R.id.btnSearch);
 
-        if(is_manager_button){
+        if(button_right == ButtonRight.manager.value){
             textFacFilterTitle.setText("관리자메뉴");
-        } else if(!super_manager_name.isEmpty()) {
-            textFacFilterTitle.setText(super_manager_name + " 담당자 조회");
-        } else {
+        } else if(button_right == ButtonRight.team_leader.value) {
             textFacFilterTitle.setText("팀장님메뉴");
+        } else {
+            textFacFilterTitle.setText(super_manager_name + " 담당자 조회");
         }
 
         //공종스피너
@@ -131,7 +137,7 @@ public class FacFilterActivity extends AppCompatActivity {
                 intent.putExtra("level", level);
                 intent.putExtra("place_id", place_id);
                 intent.putExtra("super_manager_name", super_manager_name);
-                intent.putExtra("is_manager_button", is_manager_button);
+                intent.putExtra("button_right", button_right);
                 intent.putExtra("serial", serial);
                 intent.putExtra("type", type);
                 intent.putExtra("subcontractor", subcontractor);

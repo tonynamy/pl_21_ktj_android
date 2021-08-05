@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class AttendItem {
 
-    String name;
     String id;
+    String name;
     int type;
 
     Date attend_date;

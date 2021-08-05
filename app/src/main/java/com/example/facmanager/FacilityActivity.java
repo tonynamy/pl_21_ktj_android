@@ -32,7 +32,13 @@ public class FacilityActivity extends AppCompatActivity {
     int level;
     String facility_id;
     String super_manager_name;
-    Boolean is_manager_button;
+    int button_right;
+
+    enum ButtonRight {
+        team_leader(1), manager(2);
+        int value;
+        ButtonRight(int value){ this.value = value; }
+    }
 
     Facility facility = new Facility();
 
@@ -64,7 +70,7 @@ public class FacilityActivity extends AppCompatActivity {
         level = getIntent().getIntExtra("level", -2);
         facility_id = getIntent().getStringExtra("facility_id");
         super_manager_name = getIntent().getStringExtra("super_manager_name");
-        is_manager_button = getIntent().getBooleanExtra("is_manager_button", false);
+        button_right = getIntent().getIntExtra("button_right", 0);
 
         //뷰 불러오기
         textFacSerial = findViewById(R.id.textFacSerial);
@@ -124,10 +130,10 @@ public class FacilityActivity extends AppCompatActivity {
         buttonTaskPlan.setVisibility(View.GONE);
 
         //관리자 버튼으로 왔을시
-        if(is_manager_button) {
+        if(button_right == ButtonRight.manager.value) {
             buttonFacManger.setVisibility(View.VISIBLE);
             buttonTaskPlan.setVisibility(View.VISIBLE);
-        } else if(super_manager_name.isEmpty()) {
+        } else if(button_right == ButtonRight.team_leader.value) {
             layoutTeamLeader.setVisibility(View.VISIBLE);
         } else {
             if(level == 2){
@@ -645,7 +651,7 @@ public class FacilityActivity extends AppCompatActivity {
         } else
             textExpiredDate.setText("");
 
-        if(is_manager_button){
+        if(button_right == ButtonRight.manager.value){
             if (textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
                 buttonTaskPlan.setVisibility(View.VISIBLE);
             } else {

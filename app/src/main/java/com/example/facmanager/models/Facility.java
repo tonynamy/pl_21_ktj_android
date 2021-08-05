@@ -1,5 +1,7 @@
 package com.example.facmanager.models;
 
+import com.example.facmanager.TaskPlan;
+
 import java.util.Date;
 
 public class Facility {

@@ -10,6 +10,7 @@ import android.widget.Button;
 public class AdminActivity extends AppCompatActivity {
 
     int level;
+    String place_id;
 
     Button btnPlaceSet;
     Button btnUserLevelSet;
@@ -22,6 +23,7 @@ public class AdminActivity extends AppCompatActivity {
 
         //Intent에서 Extra 가져오기
         level = getIntent().getIntExtra("level", 0);
+        place_id = getIntent().getStringExtra("place_id");
 
         //뷰 가져오기
         btnPlaceSet = findViewById(R.id.btnPlaceSet);
@@ -53,6 +55,7 @@ public class AdminActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), UserInfoActivity.class);
+                intent.putExtra("place_id", place_id);
                 intent.putExtra("level", level);
                 startActivity(intent);
             }

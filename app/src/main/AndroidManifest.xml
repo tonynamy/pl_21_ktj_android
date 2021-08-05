@@ -18,7 +18,7 @@
         <activity android:name=".PlaceDeleteActivity" />
         <activity android:name=".PlaceEditActivity" />
         <activity android:name=".AdminActivity" />
-        <activity android:name=".TeamPlanListActivity" />
+        <activity android:name=".TaskListTeamActivity" />
         <activity android:name=".TaskListActivity" />
         <activity android:name=".PlaceActivity" />
         <activity android:name=".FacilityActivity" />

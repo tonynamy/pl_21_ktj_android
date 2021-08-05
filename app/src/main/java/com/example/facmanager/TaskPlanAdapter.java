@@ -55,7 +55,7 @@ public class TaskPlanAdapter extends RecyclerView.Adapter<TaskPlanAdapter.ViewHo
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            txtTaskSerialNum = itemView.findViewById(R.id.txtTaskSerialNum);
+            txtTaskSerialNum = itemView.findViewById(R.id.txtTaskSerial);
             txtTaskLocation = itemView.findViewById(R.id.txtTaskLocation);
             txtTaskTeamName = itemView.findViewById(R.id.txtTaskTeamName);
         }

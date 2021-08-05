@@ -6,12 +6,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.example.facmanager.models.Facility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,23 +20,23 @@ public class TaskListActivity extends AppCompatActivity {
     int level;
     String place_id;
     String team_id;
-    Boolean isManagerButton;
+    int button_right;
 
     LinearLayout layoutExpiredSoon;
     RecyclerView recyclerExpiredSoon;
-    TaskPeriodAdapter adapterExpiredSoon;
+    TaskListAdapter adapterExpiredSoon;
 
     LinearLayout layoutStartPlan;
     RecyclerView recyclerStartPlan;
-    TaskPlanAdapter adapterStartPlan;
+    TaskListAdapter adapterStartPlan;
 
     LinearLayout layoutEditPlan;
     RecyclerView recyclerEditPlan;
-    TaskPlanAdapter adapterEditPlan;
+    TaskListAdapter adapterEditPlan;
 
     LinearLayout layoutDisPlan;
     RecyclerView recyclerDisPlan;
-    TaskPlanAdapter adapterDisPlan;
+    TaskListAdapter adapterDisPlan;
 
     Button buttonAllFacility;
 
@@ -49,7 +48,7 @@ public class TaskListActivity extends AppCompatActivity {
         level = getIntent().getIntExtra("level", -2);
         place_id = getIntent().getStringExtra("place_id");
         team_id = getIntent().getStringExtra("team_id");
-        isManagerButton = getIntent().getBooleanExtra("isManagerButton", false);
+        button_right = getIntent().getIntExtra("button_right", 0);
 
         layoutExpiredSoon = findViewById(R.id.layoutExpiredSoon);
         recyclerExpiredSoon = findViewById(R.id.recyclerExpiredSoon);
@@ -64,32 +63,48 @@ public class TaskListActivity extends AppCompatActivity {
         //기간만료작업
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerExpiredSoon.setLayoutManager(layoutManager);
-        adapterExpiredSoon = new TaskPeriodAdapter();
-
+        adapterExpiredSoon = new TaskListAdapter();
         recyclerExpiredSoon.setAdapter(adapterExpiredSoon);
 
         //설치예정작업
         layoutManager = new LinearLayoutManager(this);
         recyclerStartPlan.setLayoutManager(layoutManager);
-        adapterStartPlan = new TaskPlanAdapter();
-
+        adapterStartPlan = new TaskListAdapter();
         recyclerStartPlan.setAdapter(adapterStartPlan);
 
         //수정예정작업
         layoutManager = new LinearLayoutManager(this);
         recyclerEditPlan.setLayoutManager(layoutManager);
-        adapterEditPlan = new TaskPlanAdapter();
-
+        adapterEditPlan = new TaskListAdapter();
         recyclerEditPlan.setAdapter(adapterEditPlan);
 
         //해체예정작업
         layoutManager = new LinearLayoutManager(this);
         recyclerDisPlan.setLayoutManager(layoutManager);
-        adapterDisPlan = new TaskPlanAdapter();
-
+        adapterDisPlan = new TaskListAdapter();
         recyclerDisPlan.setAdapter(adapterDisPlan);
 
-        loadFacilityInfo();
+        //Task 불러오기
+        loadTaskInfo();
+
+        //아이템 눌렀을때
+        ArrayList<TaskListAdapter> adapterList = new ArrayList<>();
+        adapterList.add(adapterExpiredSoon);
+        adapterList.add(adapterStartPlan);
+        adapterList.add(adapterEditPlan);
+        adapterList.add(adapterDisPlan);
+        for(TaskListAdapter adapter : adapterList) {
+            adapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(View v, String facility_id) {
+                    Intent intent = new Intent(v.getContext(), FacilityActivity.class);
+                    intent.putExtra("level", level);
+                    intent.putExtra("facility_id", facility_id);
+                    intent.putExtra("button_right", button_right);
+                    startActivity(intent);
+                }
+            });
+        }
 
         //전체조회 버튼
         buttonAllFacility.setOnClickListener(new View.OnClickListener() {
@@ -98,20 +113,13 @@ public class TaskListActivity extends AppCompatActivity {
                 Intent intent = new Intent(v.getContext(), FacFilterActivity.class);
                 intent.putExtra("level", level);
                 intent.putExtra("place_id", place_id);
-                intent.putExtra("is_manager_button", true);
+                intent.putExtra("button_right", button_right);
                 startActivity(intent);
             }
         });
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        loadFacilityInfo();
-    }
-
-    public void loadFacilityInfo() {
+    public void loadTaskInfo() {
 
         adapterExpiredSoon.clear();
         adapterStartPlan.clear();
@@ -122,27 +130,27 @@ public class TaskListActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Object data) {
 
-                List<ArrayList<Facility>> response = (List<ArrayList<Facility>>) data;
+                List<ArrayList<TaskListItem>> response = (List<ArrayList<TaskListItem>>) data;
 
-                ArrayList<Facility> expire_facilities = response.get(0);
-                ArrayList<Facility> construct_planned_facilities = response.get(1);
-                ArrayList<Facility> edit_planned_facilities = response.get(2);
-                ArrayList<Facility> destruct_planned_facilities = response.get(3);
+                ArrayList<TaskListItem> expire_facilities = response.get(0);
+                ArrayList<TaskListItem> construct_planned_facilities = response.get(1);
+                ArrayList<TaskListItem> edit_planned_facilities = response.get(2);
+                ArrayList<TaskListItem> destruct_planned_facilities = response.get(3);
 
-                for (Facility facility : expire_facilities) {
-                    adapterExpiredSoon.addItem(facility);
+                for(TaskListItem taskPlanItem : expire_facilities) {
+                    adapterExpiredSoon.addItem(taskPlanItem);
                 }
 
-                for (Facility facility : construct_planned_facilities) {
-                    adapterStartPlan.addItem(facility);
+                for(TaskListItem taskPlanItem : construct_planned_facilities) {
+                    adapterStartPlan.addItem(taskPlanItem);
                 }
 
-                for (Facility facility : edit_planned_facilities) {
-                    adapterEditPlan.addItem(facility);
+                for(TaskListItem taskPlanItem : edit_planned_facilities) {
+                    adapterEditPlan.addItem(taskPlanItem);
                 }
 
-                for (Facility facility : destruct_planned_facilities) {
-                    adapterDisPlan.addItem(facility);
+                for(TaskListItem taskPlanItem : destruct_planned_facilities) {
+                    adapterDisPlan.addItem(taskPlanItem);
                 }
 
                 adapterExpiredSoon.notifyDataSetChanged();
@@ -158,7 +166,7 @@ public class TaskListActivity extends AppCompatActivity {
         };
         API api = new API.Builder(apiCallback).build();
 
-        api.getFacilityInfo(place_id);
-
+        api.getFacilityTaskPlan(place_id);
     }
+
 }

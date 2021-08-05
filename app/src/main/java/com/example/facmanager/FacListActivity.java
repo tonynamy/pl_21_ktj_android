@@ -21,7 +21,14 @@ public class FacListActivity extends AppCompatActivity {
     int level;
     String place_id;
     String super_manager_name;
-    Boolean is_manager_button;
+    int button_right;
+
+    enum ButtonRight {
+        team_leader(1), manager(2);
+        int value;
+        ButtonRight(int value){ this.value = value; }
+    }
+
     String serial;
     int type;
     String subcontractor;
@@ -44,7 +51,7 @@ public class FacListActivity extends AppCompatActivity {
         level = getIntent().getIntExtra("level", -2);
         place_id = getIntent().getStringExtra("place_id");
         super_manager_name = getIntent().getStringExtra("super_manager_name");
-        is_manager_button = getIntent().getBooleanExtra("is_manager_button", false);
+        button_right = getIntent().getIntExtra("button_right", 0);
         serial = getIntent().getStringExtra("serial");
         type = getIntent().getIntExtra("type", -1);
         subcontractor = getIntent().getStringExtra("subcontractor");
@@ -57,12 +64,12 @@ public class FacListActivity extends AppCompatActivity {
         textSeachItemNum = findViewById(R.id.textSeachItemNum);
         recyclerFac = findViewById(R.id.recyclerFac);
 
-        if(is_manager_button){
+        if(button_right == ButtonRight.manager.value){
             textFacListTitle.setText("관리자메뉴");
-        } else if(!super_manager_name.isEmpty()) {
-            textFacListTitle.setText(super_manager_name + " 담당자 조회");
-        } else {
+        } else if(button_right == ButtonRight.team_leader.value) {
             textFacListTitle.setText("팀장님메뉴");
+        } else {
+            textFacListTitle.setText(super_manager_name + " 담당자 조회");
         }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -75,7 +82,7 @@ public class FacListActivity extends AppCompatActivity {
                 intent.putExtra("level", level);
                 intent.putExtra("facility_id", facility.id);
                 intent.putExtra("super_manager_name", super_manager_name);
-                intent.putExtra("is_manager_button", is_manager_button);
+                intent.putExtra("button_right", button_right);
                 startActivity(intent);
             }
         });

@@ -24,6 +24,12 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
 
     ArrayList<UserInfoItem> userInfoList = new ArrayList<>();
 
+    //clear
+    public void clear() {
+        userInfoList.clear();
+    }
+
+    //add Item
     public void addItem(UserInfoItem userInfoItem) {
         userInfoList.add(userInfoItem);
     }
@@ -100,6 +106,11 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.ViewHo
                 textUserName.setTextColor(Color.BLUE);
                 textUserBirthday.setTextColor(Color.BLUE);
                 textUserLevel.setTextColor(Color.BLUE);
+            }
+            else {
+                textUserName.setTextColor(Color.BLACK);
+                textUserBirthday.setTextColor(Color.BLACK);
+                textUserLevel.setTextColor(Color.BLACK);
             }
         }
     }
