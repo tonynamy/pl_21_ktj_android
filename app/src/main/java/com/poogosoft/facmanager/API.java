@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class API {
 
-    public static String ROOT_URL = "http://pl-21-ktj.run.goorm.io/";
+    public static String ROOT_URL = "http://pl-21-ktj.run.goorm.io/api/";
 
     private static String LOGIN = ROOT_URL + "";
     private static String AUTH_CHECK = ROOT_URL + "auth_check";
