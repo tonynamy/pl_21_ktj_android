@@ -13,11 +13,22 @@
         android:layout_marginLeft="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginRight="40dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <CheckBox
+            android:id="@+id/checkRecordLogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="로그인기록 저장하기"
+            android:textSize="18sp" />
 
         <Spinner
             android:id="@+id/spinPlace"
@@ -33,9 +44,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/textbox"
-            android:ems="10"
             android:hint="이름"
             android:inputType="textPersonName"
+            android:nextFocusDown="@id/tbxBirth"
+            android:singleLine="true"
             android:textSize="24sp" />
 
         <EditText
@@ -44,9 +56,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@drawable/textbox"
-            android:ems="10"
             android:hint="생년월일 (예 740101)"
-            android:inputType="textPersonName"
+            android:inputType="numberPassword"
+            android:nextFocusDown="@id/btnLogin"
+            android:singleLine="true"
             android:textSize="24sp" />
 
         <LinearLayout
@@ -62,7 +75,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/buttonbox"
-                android:text="아이디\n생성"
+                android:text="사용자\n생성"
                 android:textSize="24sp"
                 app:backgroundTint="@null" />
 

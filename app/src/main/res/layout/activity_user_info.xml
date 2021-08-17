@@ -37,4 +37,19 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <TextView
+        android:id="@+id/textUserResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="직원정보를 불러오는중입니다."
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@id/recyclerUserInfo"
+        app:layout_constraintStart_toStartOf="@id/recyclerUserInfo"
+        app:layout_constraintTop_toTopOf="@id/recyclerUserInfo" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

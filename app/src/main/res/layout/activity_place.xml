@@ -37,6 +37,21 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <TextView
+        android:id="@+id/textPlaceResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="현장정보를 불러오는중입니다."
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@id/recyclerPlace"
+        app:layout_constraintStart_toStartOf="@id/recyclerPlace"
+        app:layout_constraintTop_toTopOf="@id/recyclerPlace" />
+
     <Button
         android:id="@+id/btnCreatePlace"
         android:layout_width="match_parent"

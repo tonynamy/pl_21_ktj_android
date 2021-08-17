@@ -3,7 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:text='"name" 팀변경'
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:visibility="gone" />
 
     <Spinner
         android:id="@+id/spinnerSelectDialog"
@@ -16,6 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:gravity="right"
         android:orientation="horizontal">
 

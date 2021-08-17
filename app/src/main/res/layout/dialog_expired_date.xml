@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/textAfter3month"
@@ -46,6 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:gravity="right"
         android:orientation="horizontal">
 

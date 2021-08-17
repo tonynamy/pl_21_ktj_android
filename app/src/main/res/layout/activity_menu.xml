@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/buttonbox"
-            android:text="출퇴근관리"
+            android:text="출퇴근 관리"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/buttonbox"
-            android:text="팀장님메뉴"
+            android:text="팀장님 작업조회"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 
@@ -54,12 +54,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/buttonbox"
-            android:text="관리자메뉴"
+            android:text="관리자 작업조회"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 
         <Button
-            android:id="@+id/btnSuperManager"
+            android:id="@+id/btnSuperManagerMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/textLevelUserName"
@@ -54,11 +54,23 @@
         android:textSize="24sp" />
 
     <TextView
+        android:id="@+id/textUserDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:text="사용자삭제"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
         android:id="@+id/textDialogCancel7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="취소"
         android:textColor="@color/point"
         android:textSize="18sp" />

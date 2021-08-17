@@ -32,6 +32,17 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
+            android:id="@+id/btnMandayMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/buttonbox"
+            android:text="공수조회"
+            android:textSize="24sp"
+            android:visibility="gone"
+            app:backgroundTint="@null" />
+
+        <Button
             android:id="@+id/btnPlaceSet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

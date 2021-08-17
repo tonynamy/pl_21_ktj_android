@@ -12,7 +12,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="팀장님메뉴"
+        android:text="팀장님 작업조회"
         android:textColor="@color/black"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,6 +37,21 @@
         app:layout_constraintVertical_bias="1.0">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/textTeamTaskResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="작업계획을 불러오는중입니다."
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/recyclerTeamLeaderTask"
+        app:layout_constraintStart_toStartOf="@+id/recyclerTeamLeaderTask"
+        app:layout_constraintTop_toTopOf="@+id/recyclerTeamLeaderTask" />
 
     <Button
         android:id="@+id/buttonAllFacility2"

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.facmanager">
+    package="com.poogosoft.facmanager">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".FacApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="건설현장관리App"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@mipmap/icon_app"
+        android:label="FMENC비계관리"
         android:supportsRtl="true"
         android:theme="@style/Theme.FacManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PasswordActivity"></activity>
+        <activity android:name=".MandaySearchActivity"></activity>
+        <activity android:name=".PasswordActivity" />
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".PlaceDeleteActivity" />
         <activity android:name=".PlaceEditActivity" />
@@ -22,10 +22,10 @@
         <activity android:name=".TaskListActivity" />
         <activity android:name=".PlaceActivity" />
         <activity android:name=".FacilityActivity" />
-        <activity android:name=".AttendFilterActivity" />
+        <activity android:name=".TeamSelectActivity" />
         <activity android:name=".FacListActivity" />
-        <activity android:name=".CreateIdActivity" />
-        <activity android:name=".FacFilterActivity" />
+        <activity android:name=".CreateUserActivity" />
+        <activity android:name=".FacSearchActivity" />
         <activity android:name=".AttendActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".MainActivity">
