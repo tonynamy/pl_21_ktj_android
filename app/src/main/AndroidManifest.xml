@@ -8,7 +8,7 @@
         android:name=".FacApplication"
         android:allowBackup="true"
         android:icon="@mipmap/icon_app"
-        android:label="FMENC비계관리"
+        android:label="FMENC 비계관리"
         android:supportsRtl="true"
         android:theme="@style/Theme.FacManager"
         android:usesCleartextTraffic="true">

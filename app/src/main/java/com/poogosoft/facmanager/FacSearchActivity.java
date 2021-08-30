@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -36,6 +38,12 @@ public class FacSearchActivity extends AppCompatActivity {
     ArrayList<String> buildings = new ArrayList<>();
     ArrayList<String> floors = new ArrayList<>();
     ArrayList<String> spots = new ArrayList<>();
+
+    Spinner spinType;
+    Spinner spinSubcont;
+    Spinner spinBuilding;
+    Spinner spinFloor;
+    Spinner spinSpot;
 
     HintSpinnerAdapter<String> adapterType;
     HintSpinnerAdapter<String> adapterSubCont;
@@ -74,34 +82,96 @@ public class FacSearchActivity extends AppCompatActivity {
         }
 
         //공종스피너
-        Spinner spinType = findViewById(R.id.spinType);
+        spinType = findViewById(R.id.spinType);
         adapterType = new HintSpinnerAdapter(this, R.layout.spinner_item, types);
         adapterType.setDropDownViewResource(R.layout.spinner_item_drop);
         spinType.setAdapter(adapterType);
 
         //사용업체 스피너
-        Spinner spinSubcont = findViewById(R.id.spinSubcont);
+        spinSubcont = findViewById(R.id.spinSubcont);
         adapterSubCont = new HintSpinnerAdapter(this, R.layout.spinner_item, subcontractors);
         adapterSubCont.setDropDownViewResource(R.layout.spinner_item_drop);
         spinSubcont.setAdapter(adapterSubCont);
 
         //설치동 스피너
-        Spinner spinBuilding = findViewById(R.id.spinBuilding);
+        spinBuilding = findViewById(R.id.spinBuilding);
         adapterBuilding = new HintSpinnerAdapter(this, R.layout.spinner_item, buildings);
         adapterBuilding.setDropDownViewResource(R.layout.spinner_item_drop);
         spinBuilding.setAdapter(adapterBuilding);
 
         //층 스피너
-        Spinner spinFloor = findViewById(R.id.spinFloor);
+        spinFloor = findViewById(R.id.spinFloor);
         adapterFloor = new HintSpinnerAdapter(this, R.layout.spinner_item, floors);
         adapterFloor.setDropDownViewResource(R.layout.spinner_item_drop);
         spinFloor.setAdapter(adapterFloor);
 
         //설치위치 스피너
-        Spinner spinSpot = findViewById(R.id.spinSpot);
+        spinSpot = findViewById(R.id.spinSpot);
         adapterSpot = new HintSpinnerAdapter(this, R.layout.spinner_item, spots);
         adapterSpot.setDropDownViewResource(R.layout.spinner_item_drop);
         spinSpot.setAdapter(adapterSpot);
+
+        spinType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                refreshFacilityInfo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinSubcont.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                refreshFacilityInfo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinBuilding.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                refreshFacilityInfo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinFloor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                refreshFacilityInfo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinSpot.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                refreshFacilityInfo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         //검색버튼 눌렀을시
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -154,10 +224,41 @@ public class FacSearchActivity extends AppCompatActivity {
             }
         });
 
-        getFacilityInfo();
+        getFacilityInfo(-1, "", "", "", "");
     }
 
-    public void getFacilityInfo() {
+    protected void refreshFacilityInfo() {
+
+        int type = spinType.getSelectedItemPosition();
+
+        String subcontractor = "";
+
+        if(spinSubcont.getSelectedItemPosition() > 0) {
+            subcontractor = spinSubcont.getSelectedItem().toString();
+        }
+
+        String building = "";
+
+        if(spinBuilding.getSelectedItemPosition() > 0) {
+            building = spinBuilding.getSelectedItem().toString();
+        }
+
+        String floor = "";
+
+        if(spinFloor.getSelectedItemPosition() > 0) {
+            floor = spinFloor.getSelectedItem().toString();
+        }
+
+        String spot = "";
+
+        if(spinSpot.getSelectedItemPosition() > 0) {
+            spot = spinSpot.getSelectedItem().toString();
+        }
+
+        getFacilityInfo(type, subcontractor, building, floor, spot);
+    }
+
+    public void getFacilityInfo(int type, String subcontractor, String building, String floor, String spot) {
 
         API.APICallback apiCallback = new API.APICallback() {
             @Override
@@ -217,7 +318,7 @@ public class FacSearchActivity extends AppCompatActivity {
             }
         };
         API api = new API.Builder(apiCallback).build();
-        api.getFacilitySearchInfo(place_id, super_manager_name);
+        api.getFacilitySearchInfo(place_id, super_manager_name, type, subcontractor, building, floor, spot);
 
     }
 }

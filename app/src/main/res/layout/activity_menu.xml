@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/buttonbox"
-            android:text="팀장님 작업조회"
+            android:text="팀 작업조회"
             android:textSize="24sp"
             app:backgroundTint="@null" />
 

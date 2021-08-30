@@ -23,12 +23,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class AttendActivity extends AppCompatActivity {
 
     String team_id;
     String place_id;
 
+    TextView textAttendenceResult;
     RecyclerView recyclerAttend;
     TextView textTeammateResult;
 
@@ -45,6 +47,7 @@ public class AttendActivity extends AppCompatActivity {
         place_id = getIntent().getStringExtra("place_id");
 
         //뷰에서 가져오기
+        textAttendenceResult = findViewById(R.id.textAttendenceResult);
         recyclerAttend = findViewById(R.id.recyclerAttend);
         textTeammateResult = findViewById(R.id.textTeammateResult);
 
@@ -70,7 +73,7 @@ public class AttendActivity extends AppCompatActivity {
 
                 AlertDialog time_dialog = builder.create();
 
-                txtDialogTitle.setText(attendItem.name+ " 출근 상황 수정");
+                txtDialogTitle.setText(attendItem.name + " 출근 상황 수정");
 
                 SimpleDateFormat sdf_hour = new SimpleDateFormat("HH");
                 SimpleDateFormat sdf_minute = new SimpleDateFormat("mm");
@@ -329,12 +332,18 @@ public class AttendActivity extends AppCompatActivity {
                     textTeammateResult.setText("팀원정보가 없습니다.\n웹서비스에서 팀등록버튼을 눌러 팀원을 추가해주세요.");
                 }
 
+                // -- 선생님이 짠 코드
+                ArrayList<String> attendanceIdList = new ArrayList<>();
                 HashMap<String, AttendItem> record = new HashMap<>();
 
                 for(UserAttendance attendance : attendances) {
 
                     if (!record.containsKey(attendance.id)) {
-                        record.put(attendance.id, new AttendItem(attendance.id, attendance.name));
+                        AttendItem attendItem = new AttendItem();
+                        attendItem.id = attendance.id;
+                        attendItem.name = attendance.name;
+                        record.put(attendance.id, attendItem);
+                        attendanceIdList.add(attendance.id);
                     }
 
                     if(attendance.type == 0 ) {
@@ -346,14 +355,71 @@ public class AttendActivity extends AppCompatActivity {
                     } else {
                         record.get(attendance.id).type = -1;
                     }
-
                 }
 
-                for(AttendItem attendItem : record.values()) {
-                    attendAdapter.addItem( attendItem );
+                for(String attendanceId : attendanceIdList) {
+                    AttendItem attendItem = record.get(attendanceId);
+                    attendAdapter.addItem(attendItem);
                 }
+
+                /*
+                ArrayList<AttendItem> attendItemList = new ArrayList<>();
+                ArrayList<AttendItem> duplicate_items = new ArrayList<>();
+                ArrayList<String> duplicate_ids = new ArrayList<>();
+
+                for(UserAttendance userAttendance : attendances) {
+
+                    AttendItem attendItem = new AttendItem();
+                    AttendItem duplicate_item = new AttendItem();
+
+                    attendItem.id = userAttendance.id;
+                    attendItem.name = userAttendance.name;
+
+                    if (userAttendance.type == 1) {
+                        attendItem.leave_date = userAttendance.date;
+                        attendItem.type = 1;
+                        duplicate_ids.add(userAttendance.id);
+
+                    } else if(userAttendance.type == 0 ) {
+                        attendItem.attend_date = userAttendance.date;
+                        attendItem.type = 0;
+
+                        duplicate_item.id = userAttendance.id;
+                        duplicate_item.attend_date = userAttendance.date;
+                        duplicate_items.add(duplicate_item);
+
+                    } else {
+                        attendItem.type = -1;
+                    }
+
+                    attendItemList.add(attendItem);
+                }
+
+                for(int i = 0; i < attendItemList.size(); i++) {
+                    AttendItem attendItem = attendItemList.get(i);
+                    for(String duplicate_id : duplicate_ids) {
+                        if(attendItem.id.equals(duplicate_id) && attendItem.type < 1) {
+                            attendItemList.remove(i);
+                        }
+                    }
+                }
+
+                for(AttendItem attendItem : attendItemList) {
+                    for(AttendItem duplicate_item : duplicate_items) {
+                        if(attendItem.id.equals(duplicate_item.id) && attendItem.type == 1) {
+                            attendItem.attend_date = duplicate_item.attend_date;
+                            break;
+                        }
+                    }
+                    attendAdapter.addItem(attendItem);
+                }*/
+
+                //--
 
                 attendAdapter.notifyDataSetChanged();
+
+                textAttendenceResult.setText(attendanceIdList.size() + "명");
+                textAttendenceResult.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -361,7 +427,6 @@ public class AttendActivity extends AppCompatActivity {
                 textTeammateResult.setText("출퇴근정보를 불러오는데 실패했습니다.\n사유: " + errorMsg);
             }
         };
-
         API api = new API.Builder(apiCallback).build();
         api.getAttendances(team_id);
     }

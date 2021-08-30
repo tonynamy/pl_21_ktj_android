@@ -22,7 +22,6 @@ public class Facility {
     public Date dis_finished_at;
     public Date expired_at;
     public Date created_at;
-    public String teammate;
     public String attendance;
     public String taskplan_type;
     public String taskplan_team_id;

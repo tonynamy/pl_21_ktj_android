@@ -4,13 +4,14 @@ import java.util.Date;
 
 public class AttendItem {
 
-    String id;
-    String name;
-    int type;
+    public String id;
+    public String name;
+    public int type;
 
     Date attend_date;
     Date leave_date;
 
+    /*
     public AttendItem(String id, String name) {
         this(id, name, -2);
     }
@@ -20,6 +21,7 @@ public class AttendItem {
         this.id = id;
         this.type = type;
     }
+    */
 
     /*
     public String getName() { return name; }

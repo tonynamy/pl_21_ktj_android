@@ -1,6 +1,7 @@
 package com.poogosoft.facmanager;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import com.poogosoft.facmanager.models.Auth;
 import com.poogosoft.facmanager.models.Facility;
@@ -22,9 +23,9 @@ import java.util.Map;
 
 public class API {
 
-    public static String ROOT_URL = "http://pl-21-ktj.run.goorm.io/api/";
+    public static String ROOT_URL = "https://pl-21-ktj.run.goorm.io/api/";
 
-    private static String LOGIN = ROOT_URL + "";
+    private static String LOGIN = ROOT_URL + "login";
     private static String AUTH_CHECK = ROOT_URL + "auth_check";
     private static String PLACE = ROOT_URL + "place";
     private static String PLACE_ADD = ROOT_URL + "place_add";
@@ -673,7 +674,6 @@ public class API {
                     facility.expired_at = getDateFromString(jsonObject.getString("expired_at"));
                     facility.created_at = getDateFromString(jsonObject.getString("created_at"));
 
-                    if(jsonObject.has("teammate")){ facility.teammate = jsonObject.getString("teammate"); }
                     if(jsonObject.has("attendance")){ facility.attendance = jsonObject.getString("attendance"); }
                     if(jsonObject.has("taskplan_type")){ facility.taskplan_type = jsonObject.getString("taskplan_type"); }
                     if(jsonObject.has("taskplan_team_id")){ facility.taskplan_team_id = jsonObject.getString("taskplan_team_id"); }
@@ -695,14 +695,35 @@ public class API {
         new NetworkTask(url, values, true, networkCallback).execute();
     }
 
-    public void getFacilitySearchInfo(String place_id, String super_manager) {
+    public void getFacilitySearchInfo(String place_id, String super_manager, int type, String subcontractor, String building, String floor, String spot) {
 
         String url = FACILITY_SEARCH_INFO;
 
         ContentValues values = new ContentValues();
+
         values.put("place_id", place_id);
         if(!super_manager.isEmpty()) {
             values.put("super_manager", super_manager);
+        }
+
+        if(type > 0) {
+            values.put("type", type);
+        }
+
+        if(!subcontractor.isEmpty()) {
+            values.put("subcontractor", subcontractor);
+        }
+
+        if(!building.isEmpty()) {
+            values.put("building", building);
+        }
+
+        if(!floor.isEmpty()) {
+            values.put("floor", floor);
+        }
+
+        if(!spot.isEmpty()) {
+            values.put("spot", spot);
         }
 
         NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
@@ -716,14 +737,28 @@ public class API {
 
                     JSONObject jsonObject = new JSONObject(result);
 
-                    String[] str_types = jsonObject.getString("type").split(",");
-                    int[] int_types = new int[str_types.length];
+                    String typeString = jsonObject.getString("type");
 
-                    int i = 0;
+                    String[] str_types = typeString.split(",");
 
-                    for(String str_type : str_types) {
+                    int[] int_types;
 
-                        int_types[i++] = Integer.parseInt(str_type);
+
+                    if(typeString.isEmpty()) {
+
+                        int_types = new int[0];
+
+                    } else {
+
+                        int_types = new int[str_types.length];
+
+                        int i = 0;
+
+                        for(String str_type : str_types) {
+
+                            int_types[i++] = Integer.parseInt(str_type);
+                        }
+
                     }
 
                     facilityInfo.types = int_types;
