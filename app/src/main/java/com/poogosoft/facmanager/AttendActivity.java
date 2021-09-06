@@ -332,7 +332,6 @@ public class AttendActivity extends AppCompatActivity {
                     textTeammateResult.setText("팀원정보가 없습니다.\n웹서비스에서 팀등록버튼을 눌러 팀원을 추가해주세요.");
                 }
 
-                // -- 선생님이 짠 코드
                 ArrayList<String> attendanceIdList = new ArrayList<>();
                 HashMap<String, AttendItem> record = new HashMap<>();
 
@@ -361,60 +360,6 @@ public class AttendActivity extends AppCompatActivity {
                     AttendItem attendItem = record.get(attendanceId);
                     attendAdapter.addItem(attendItem);
                 }
-
-                /*
-                ArrayList<AttendItem> attendItemList = new ArrayList<>();
-                ArrayList<AttendItem> duplicate_items = new ArrayList<>();
-                ArrayList<String> duplicate_ids = new ArrayList<>();
-
-                for(UserAttendance userAttendance : attendances) {
-
-                    AttendItem attendItem = new AttendItem();
-                    AttendItem duplicate_item = new AttendItem();
-
-                    attendItem.id = userAttendance.id;
-                    attendItem.name = userAttendance.name;
-
-                    if (userAttendance.type == 1) {
-                        attendItem.leave_date = userAttendance.date;
-                        attendItem.type = 1;
-                        duplicate_ids.add(userAttendance.id);
-
-                    } else if(userAttendance.type == 0 ) {
-                        attendItem.attend_date = userAttendance.date;
-                        attendItem.type = 0;
-
-                        duplicate_item.id = userAttendance.id;
-                        duplicate_item.attend_date = userAttendance.date;
-                        duplicate_items.add(duplicate_item);
-
-                    } else {
-                        attendItem.type = -1;
-                    }
-
-                    attendItemList.add(attendItem);
-                }
-
-                for(int i = 0; i < attendItemList.size(); i++) {
-                    AttendItem attendItem = attendItemList.get(i);
-                    for(String duplicate_id : duplicate_ids) {
-                        if(attendItem.id.equals(duplicate_id) && attendItem.type < 1) {
-                            attendItemList.remove(i);
-                        }
-                    }
-                }
-
-                for(AttendItem attendItem : attendItemList) {
-                    for(AttendItem duplicate_item : duplicate_items) {
-                        if(attendItem.id.equals(duplicate_item.id) && attendItem.type == 1) {
-                            attendItem.attend_date = duplicate_item.attend_date;
-                            break;
-                        }
-                    }
-                    attendAdapter.addItem(attendItem);
-                }*/
-
-                //--
 
                 attendAdapter.notifyDataSetChanged();
 

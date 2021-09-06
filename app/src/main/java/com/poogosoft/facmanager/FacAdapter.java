@@ -1,8 +1,10 @@
 package com.poogosoft.facmanager;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,6 +61,7 @@ public class FacAdapter extends RecyclerView.Adapter<FacAdapter.ViewHolder>{
         TextView txtSerialNum;
         TextView txtLocation;
         TextView txtProgress;
+        ImageView imgPlanCircle;
 
         Facility facility;
 
@@ -68,6 +71,7 @@ public class FacAdapter extends RecyclerView.Adapter<FacAdapter.ViewHolder>{
             txtSerialNum = itemView.findViewById(R.id.txtSerialNum);
             txtLocation = itemView.findViewById(R.id.txtLocation);
             txtProgress = itemView.findViewById(R.id.txtProgress);
+            imgPlanCircle = itemView.findViewById(R.id.imgPlanCircle);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,6 +87,15 @@ public class FacAdapter extends RecyclerView.Adapter<FacAdapter.ViewHolder>{
             facility = item;
 
             txtSerialNum.setText(item.serial);
+
+            if(item.taskplan_type != null) {
+                if(item.taskplan_type.equals("1")){ imgPlanCircle.setColorFilter(Color.parseColor("#ff5544")); }
+                if(item.taskplan_type.equals("2")){ imgPlanCircle.setColorFilter(Color.parseColor("#77bb00")); }
+                if(item.taskplan_type.equals("3")){ imgPlanCircle.setColorFilter(Color.parseColor("#888899")); }
+                imgPlanCircle.setVisibility(View.VISIBLE);
+            } else {
+                imgPlanCircle.setVisibility(View.GONE);
+            }
 
             String location = item.building + " " + item.floor + " " + item.spot;
             txtLocation.setText(location);

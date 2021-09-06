@@ -52,20 +52,21 @@ public class FacilityActivity extends AppCompatActivity {
 
     TextView textFacType;
     TextView textSuperManager;
-    LinearLayout layoutPurpose;
-    TextView textPurpose;
     TextView textFacSubCon;
     TextView textFacSpot;
+    LinearLayout layoutPurpose;
+    TextView textPurpose;
+    TextView textFacSizeName;
+    TextView textFacSize;
+    LinearLayout layoutExpiredDate;
     TextView textExpiredDate;
 
     LinearLayout layoutTeamLeader;
     ImageView imageUp;
     TextView textManday;
     ImageView imageDown;
-    Button buttonCreate;
-    Button buttonEdit;
-    Button buttonEdit2;
-    Button buttonDis;
+    Button buttonTask1;
+    Button buttonTask2;
     Button buttonTaskPlan;
 
     @Override
@@ -92,20 +93,21 @@ public class FacilityActivity extends AppCompatActivity {
 
         textFacType = findViewById(R.id.textFacType);
         textSuperManager = findViewById(R.id.textSuperManager);
-        layoutPurpose = findViewById(R.id.layoutPurpose);
-        textPurpose = findViewById(R.id.textPurpose);
         textFacSubCon = findViewById(R.id.textFacSubCon);
         textFacSpot = findViewById(R.id.textFacSpot);
+        layoutPurpose = findViewById(R.id.layoutPurpose);
+        textPurpose = findViewById(R.id.textPurpose);
+        textFacSizeName = findViewById(R.id.textFacSizeName);
+        textFacSize = findViewById(R.id.textFacSize);
+        layoutExpiredDate = findViewById(R.id.layoutExpiredDate);
         textExpiredDate = findViewById(R.id.textExpiredDate);
 
         layoutTeamLeader = findViewById(R.id.layoutTeamLeader);
         imageUp = findViewById(R.id.imageUp);
         textManday = findViewById(R.id.textManday);
         imageDown = findViewById(R.id.imageDown);
-        buttonCreate = findViewById(R.id.buttonCreate);
-        buttonEdit = findViewById(R.id.buttonEdit);
-        buttonEdit2 = findViewById(R.id.buttonEdit2);
-        buttonDis = findViewById(R.id.buttonDis);
+        buttonTask1 = findViewById(R.id.buttonTask1);
+        buttonTask2 = findViewById(R.id.buttonTask2);
         buttonTaskPlan = findViewById(R.id.buttonTaskPlan);
 
         //SeekBar에 터치가 안되게
@@ -337,12 +339,20 @@ public class FacilityActivity extends AppCompatActivity {
                                     Toast.makeText(v.getContext(), "설치목적 변경에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
                                 }
                             };
-
                             API api = new API.Builder(apiCallback).build();
-
                             api.editFacilityPurpose(facility_id, eTextDialogInput.getText().toString());
                         }
                     });
+                }
+            }
+        });
+
+        //물량등록을 눌렀을때
+        textFacSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(facility.cube_result.isEmpty() && facility.danger_result.isEmpty()) {
+                    Toast.makeText(v.getContext(), "물량등록을 눌렀습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -424,16 +434,22 @@ public class FacilityActivity extends AppCompatActivity {
                                             Toast.makeText(v.getContext(), "만료일 등록에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
                                         }
                                     };
-
                                     API api = new API.Builder(apiCallback).build();
-
                                     api.editFacilityExpiredAt(facility_id, expired_at);
-
                                 }
                             }
                         });
                     }
                 }
+            }
+        });
+
+        //투입인원 텍스트박스
+        textManday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                manday = Integer.parseInt(facility.attendance) > 1 ? Integer.parseInt(facility.attendance) : 1;
+                textManday.setText(String.valueOf(manday));
             }
         });
 
@@ -453,6 +469,44 @@ public class FacilityActivity extends AppCompatActivity {
                         manday--;
                     }
                     textManday.setText(String.valueOf(manday));
+                }
+            });
+        }
+
+        //작업버튼
+        ArrayList<Button> taskButtons = new ArrayList<>();
+        taskButtons.add(buttonTask1);
+        taskButtons.add(buttonTask2);
+
+        for(Button taskButton : taskButtons) {
+
+            taskButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    API.APICallback apiCallback = new API.APICallback() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            Toast.makeText(v.getContext(), "작업보고에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                            getFacility();
+                        }
+
+                        @Override
+                        public void onFailed(String errorMsg) {
+                            Toast.makeText(v.getContext(), "작업보고에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                        }
+                    };
+                    API api = new API.Builder(apiCallback).build();
+                    if(taskButton.getText() == "설치") {
+                        api.addTask(team_id, facility.id, manday, 1);
+                    } else if(taskButton.getText() == "수정") {
+                        api.addTask(team_id, facility.id, manday, 2);
+                    } else if(taskButton.getText() == "해체") {
+                        api.addTask(team_id, facility.id, manday, 3);
+                    }
+
+                    //Facility 정보 가져오기
+                    getFacility();
                 }
             });
         }
@@ -662,8 +716,6 @@ public class FacilityActivity extends AppCompatActivity {
                 break;
         }
         textFacType.setText(stringFacType);
-        textFacSubCon.setText(facility.subcontractor);
-        textFacSpot.setText(facility.building + " " + facility.floor + " " + facility.spot);
 
         //담당자
         if(facility.super_manager.isEmpty()) {
@@ -674,6 +726,12 @@ public class FacilityActivity extends AppCompatActivity {
             textSuperManager.setText(facility.super_manager);
         }
 
+        //사용업체
+        textFacSubCon.setText(facility.subcontractor);
+
+        //설치위치
+        textFacSpot.setText(facility.building + " " + facility.floor + " " + facility.spot);
+
         //설치목적
         if(facility.purpose.isEmpty()) {
             layoutPurpose.setVisibility(View.GONE);
@@ -682,8 +740,27 @@ public class FacilityActivity extends AppCompatActivity {
             textPurpose.setText(facility.purpose);
         }
 
-        //만료일
+        //물량
+        textFacSize.setTextColor(Color.BLACK);
+        if(!facility.cube_result.isEmpty()) {
+            textFacSizeName.setText("물량(루베)");
+            textFacSize.setText(facility.cube_result + "㎥");
+        } else if(!facility.danger_result.isEmpty()) {
+            textFacSizeName.setText("물량(헤베)");
+            textFacSize.setText(facility.danger_result + "㎡");
+        } else {
+            textFacSizeName.setText("물량");
+            if(button_right == ButtonRight.MANAGER) {
+                textFacSize.setText("등록하기");
+                textFacSize.setTextColor(Color.BLUE);
+            } else{
+                textFacSize.setText("");
+            }
+        }
+
+        //사용기간
         if(facility.finished_at != null){
+            layoutExpiredDate.setVisibility(View.VISIBLE);
             if(facility.expired_at != null){
                 SimpleDateFormat expiredDateFormat = new SimpleDateFormat("~ yyyy. MM. dd");
                 textExpiredDate.setText(expiredDateFormat.format(facility.expired_at));
@@ -693,10 +770,11 @@ public class FacilityActivity extends AppCompatActivity {
                 textExpiredDate.setText("만료일등록");
                 textExpiredDate.setTextColor(Color.BLUE);
             }
-        } else
-            textExpiredDate.setText("");
+        } else {
+            layoutExpiredDate.setVisibility(View.GONE);
+        }
 
-        //작업계획
+        //관리자 버튼 활성화 부분
         if(button_right == ButtonRight.MANAGER){
             if(textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
                 if(facility.taskplan_type != null) {
@@ -706,34 +784,50 @@ public class FacilityActivity extends AppCompatActivity {
                 }
                 buttonTaskPlan.setVisibility(View.VISIBLE);
             } else {
-                if(facility.taskplan_type != null) {
-                    deleteTaskPlan();
-                }
                 buttonTaskPlan.setVisibility(View.GONE);
             }
-        //맨데이 투입
+
+        //팀장님 버튼 활성화 부분
         } else if(button_right == ButtonRight.TEAM_LEADER) {
 
-            buttonCreate.setVisibility(View.GONE);
-            buttonEdit.setVisibility(View.GONE);
-            buttonEdit2.setVisibility(View.INVISIBLE);
-            buttonDis.setVisibility(View.GONE);
+            buttonTask1.setVisibility(View.INVISIBLE);
+            buttonTask2.setVisibility(View.INVISIBLE);
+            manday = Integer.parseInt(facility.attendance) > 1 ? Integer.parseInt(facility.attendance) : 1;
+            textManday.setText(String.valueOf(manday));
 
-            if(Integer.parseInt(facility.attendance) > 0 && manday == 1){
-                manday = Integer.parseInt(facility.attendance);
-                textManday.setText(String.valueOf(manday));
-            }
-            if(textTaskState.getText() == "설치전" || textTaskState.getText() == "설치중") {
-                buttonCreate.setVisibility(View.VISIBLE);
-            } else if(textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
-                buttonEdit2.setVisibility(View.VISIBLE);
-                buttonDis.setVisibility(View.VISIBLE);
-            } else if(textTaskState.getText() == "수정중") {
-                buttonEdit.setVisibility(View.VISIBLE);
-            } else if(textTaskState.getText() == "해체중") {
-                buttonDis.setVisibility(View.VISIBLE);
+            //작업계획이 있는 팀은 계획에 있는 작업버튼만 활성화
+            if(facility.taskplan_type != null && facility.taskplan_team_id.equals(team_id)) {
+
+                if(facility.taskplan_type.equals("1")) {
+                    buttonTask2.setText("설치");
+                    buttonTask2.setVisibility(View.VISIBLE);
+                } else if(facility.taskplan_type.equals("2")) {
+                    buttonTask2.setText("수정");
+                    buttonTask2.setVisibility(View.VISIBLE);
+                } else if(facility.taskplan_type.equals("3")) {
+                    buttonTask2.setText("해체");
+                    buttonTask2.setVisibility(View.VISIBLE);
+                }
+
+            } else {
+                if(textTaskState.getText() == "설치전" || textTaskState.getText() == "설치중") {
+                    buttonTask2.setText("설치");
+                    buttonTask2.setVisibility(View.VISIBLE);
+                } else if(textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료" || textTaskState.getText() == "수정중") {
+                    buttonTask1.setText("수정");
+                    buttonTask1.setVisibility(View.VISIBLE);
+                    buttonTask2.setText("해체");
+                    buttonTask2.setVisibility(View.VISIBLE);
+                } else if(textTaskState.getText() == "해체중") {
+                    buttonTask2.setText("해체");
+                    buttonTask2.setVisibility(View.VISIBLE);
+                }
             }
         }
+
+
+
+        //모든과정이 끝나면 안내문 지우고 레이아웃 보여주기
         textFacilityResult.setVisibility(View.GONE);
         layoutFacility.setVisibility(View.VISIBLE);
     }
@@ -794,7 +888,7 @@ public class FacilityActivity extends AppCompatActivity {
 
     //작업계획 삭제
     private void deleteTaskPlan() {
-        deleteTaskPlan( null);
+        deleteTaskPlan(null);
     }
     private void deleteTaskPlan(AlertDialog dialog) {
 

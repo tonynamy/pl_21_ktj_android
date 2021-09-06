@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -50,6 +49,7 @@ public class FacSearchActivity extends AppCompatActivity {
     HintSpinnerAdapter<String> adapterBuilding;
     HintSpinnerAdapter<String> adapterFloor;
     HintSpinnerAdapter<String> adapterSpot;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,67 +111,21 @@ public class FacSearchActivity extends AppCompatActivity {
         adapterSpot.setDropDownViewResource(R.layout.spinner_item_drop);
         spinSpot.setAdapter(adapterSpot);
 
-        spinType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        AdapterView.OnItemSelectedListener refreshFacilityInfoListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 refreshFacilityInfo();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
-        });
-        spinSubcont.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        };
 
-                refreshFacilityInfo();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spinBuilding.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                refreshFacilityInfo();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spinFloor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                refreshFacilityInfo();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spinSpot.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                refreshFacilityInfo();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
+        spinType.setOnItemSelectedListener(refreshFacilityInfoListener);
+        spinSubcont.setOnItemSelectedListener(refreshFacilityInfoListener);
+        spinBuilding.setOnItemSelectedListener(refreshFacilityInfoListener);
+        spinFloor.setOnItemSelectedListener(refreshFacilityInfoListener);
+        spinSpot.setOnItemSelectedListener(refreshFacilityInfoListener);
 
         //검색버튼 눌렀을시
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -265,6 +219,18 @@ public class FacSearchActivity extends AppCompatActivity {
             public void onSuccess(Object data) {
 
                 FacilityInfo facilityInfo = (FacilityInfo) data;
+                /*
+                spinType.setOnItemSelectedListener(null);
+                spinSubcont.setOnItemSelectedListener(null);
+                spinBuilding.setOnItemSelectedListener(null);
+                spinFloor.setOnItemSelectedListener(null);
+                spinSpot.setOnItemSelectedListener(null);
+                */
+                spinType.setSelection(-1);
+                spinSubcont.setSelection(-1);
+                spinBuilding.setSelection(-1);
+                spinFloor.setSelection(-1);
+                spinSpot.setSelection(-1);
 
                 textFacSearch.setVisibility(View.GONE);
 
@@ -303,6 +269,26 @@ public class FacSearchActivity extends AppCompatActivity {
                 adapterBuilding.notifyDataSetChanged();
                 adapterFloor.notifyDataSetChanged();
                 adapterSpot.notifyDataSetChanged();
+
+                if(type > 0) {
+                    spinType.setSelection(type+1);
+                }
+                if(!subcontractor.isEmpty() && subcontractor.contains(subcontractor)) {
+                    int index = subcontractor.indexOf(subcontractor);
+                    spinSubcont.setSelection(index+1);
+                }
+                if(!building.isEmpty() && building.contains(building)) {
+                    int index = building.indexOf(building);
+                    spinBuilding.setSelection(index+1);
+                }
+                if(!floor.isEmpty() && floor.contains(floor)) {
+                    int index = floor.indexOf(floor);
+                    spinFloor.setSelection(index+1);
+                }
+                if(!spot.isEmpty() && spot.contains(spot)) {
+                    int index = spot.indexOf(spot);
+                    spinSpot.setSelection(index+1);
+                }
 
                 layoutFacSearch.setVisibility(View.VISIBLE);
 

@@ -37,6 +37,7 @@ public class FacListActivity extends AppCompatActivity {
     TextView textFacListTitle;
     TextView textSeachItemNum;
     ImageView imageFilter;
+    String filter_string;
     RecyclerView recyclerFac;
     Button btnResearch;
 
@@ -104,6 +105,7 @@ public class FacListActivity extends AppCompatActivity {
                 View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_faclist_filter, null);
                 builder.setView(view);
 
+                ArrayList<CheckBox> checkBoxes = new ArrayList<>();
                 CheckBox checkPlan = view.findViewById(R.id.checkPlan);
                 CheckBox checkStart = view.findViewById(R.id.checkStart);
                 CheckBox checkFinish = view.findViewById(R.id.checkFinish);
@@ -111,11 +113,45 @@ public class FacListActivity extends AppCompatActivity {
                 CheckBox checkEditFinish = view.findViewById(R.id.checkEditFinish);
                 CheckBox checkDisStart = view.findViewById(R.id.checkDisStart);
                 CheckBox checkDisFinish = view.findViewById(R.id.checkDisFinish);
+                checkBoxes.add(checkPlan);
+                checkBoxes.add(checkStart);
+                checkBoxes.add(checkFinish);
+                checkBoxes.add(checkEditStart);
+                checkBoxes.add(checkEditFinish);
+                checkBoxes.add(checkDisStart);
+                checkBoxes.add(checkDisFinish);
+                TextView textDialogDelFilter = view.findViewById(R.id.textDialogDelFilter);
                 TextView textDialogCancel10 = view.findViewById(R.id.textDialogCancel10);
                 TextView textDialogSubmit10 = view.findViewById(R.id.textDialogSubmit10);
-                AlertDialog dialog = builder.create();
 
+                String[] state_array;
+                if(filter_string != null) {
+                    state_array = filter_string.split("");
+
+                    for(String filter_key : state_array) {
+                        switch (filter_key) {
+                            case "a": checkPlan.setChecked(true); break;
+                            case "b": checkStart.setChecked(true); break;
+                            case "c": checkFinish.setChecked(true); break;
+                            case "d": checkEditStart.setChecked(true); break;
+                            case "e": checkEditFinish.setChecked(true); break;
+                            case "f": checkDisStart.setChecked(true); break;
+                            case "g": checkDisFinish.setChecked(true); break;
+                        }
+                    }
+                }
+                AlertDialog dialog = builder.create();
                 dialog.show();
+
+                //전체필터해제 선택시
+                textDialogDelFilter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for(CheckBox this_checkbox : checkBoxes) {
+                            this_checkbox.setChecked(false);
+                        }
+                    }
+                });
 
                 //취소 선택시
                 textDialogCancel10.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +165,25 @@ public class FacListActivity extends AppCompatActivity {
                 textDialogSubmit10.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        filter_string = null;
+                        for(int i = 0; i < checkBoxes.size(); i++) {
+                            CheckBox this_checkbox = checkBoxes.get(i);
+                            if(this_checkbox.isChecked()) {
+                                switch (i) {
+                                    case 0: filter_string += "a"; break;
+                                    case 1: filter_string += "b"; break;
+                                    case 2: filter_string += "c"; break;
+                                    case 3: filter_string += "d"; break;
+                                    case 4: filter_string += "e"; break;
+                                    case 5: filter_string += "f"; break;
+                                    case 6: filter_string += "g"; break;
+                                }
+                            }
+                        }
+                        //설비정보 불러오기
+                        searchFacility();
+
                         dialog.dismiss();
                     }
                 });
@@ -144,7 +199,7 @@ public class FacListActivity extends AppCompatActivity {
         });
 
         //설비정보 불러오기
-        searchFacility(serial, type, subcontractor, building, floor, spot);
+        searchFacility();
     }
 
     //액티비티 불러올때마다 새로고침
@@ -152,10 +207,10 @@ public class FacListActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
 
-        searchFacility(serial, type, subcontractor, building, floor, spot);
+        searchFacility();
     }
 
-    public void searchFacility(String serial, int type, String subcontractor, String building, String floor, String spot) {
+    public void searchFacility() {
 
         facAdapter.clear();
 
@@ -179,7 +234,7 @@ public class FacListActivity extends AppCompatActivity {
             }
         };
         API api = new API.Builder(apiCallback).build();
-        api.searchFacility(place_id, serial, type, super_manager_name, subcontractor, building, floor, spot);
+        api.searchFacility(place_id, serial, type, super_manager_name, subcontractor, building, floor, spot, button_right, filter_string);
 
     }
 }

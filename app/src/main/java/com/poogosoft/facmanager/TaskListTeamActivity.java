@@ -97,6 +97,7 @@ public class TaskListTeamActivity extends AppCompatActivity {
                     textTeamTaskResult.setVisibility(View.GONE);
                 } else {
                     textTeamTaskResult.setText("작업계획이 없습니다.\n아래의 전체조회버튼을 눌러주세요.");
+                    textTeamTaskResult.setVisibility(View.VISIBLE);
                 }
 
                 for(TaskListItem taskListItem : taskList) {

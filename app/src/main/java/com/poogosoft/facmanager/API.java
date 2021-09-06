@@ -1,7 +1,6 @@
 package com.poogosoft.facmanager;
 
 import android.content.ContentValues;
-import android.util.Log;
 
 import com.poogosoft.facmanager.models.Auth;
 import com.poogosoft.facmanager.models.Facility;
@@ -23,7 +22,7 @@ import java.util.Map;
 
 public class API {
 
-    public static String ROOT_URL = "https://pl-21-ktj.run.goorm.io/api/";
+    public static String ROOT_URL = "http://49.247.24.170/api/";
 
     private static String LOGIN = ROOT_URL + "login";
     private static String AUTH_CHECK = ROOT_URL + "auth_check";
@@ -47,6 +46,7 @@ public class API {
     private static String FACILITY_EDIT_SUPER_MANAGER = ROOT_URL + "facility_edit_super_manager";
     private static String FACILITY_EDIT_PURPOSE = ROOT_URL + "facility_edit_purpose";
     private static String FACILITY_EDIT_EXPIRED_AT = ROOT_URL + "facility_edit_expired_at";
+    private static String TASK_ADD = ROOT_URL + "task_add";
     private static String TASKPLAN = ROOT_URL + "taskplan";
     private static String TASKPLAN_TEAM = ROOT_URL + "taskplan_team";
     private static String TASKPLAN_EDIT = ROOT_URL + "taskplan_edit";
@@ -658,13 +658,16 @@ public class API {
                     facility.id = jsonObject.getString("id");
                     facility.place_id = jsonObject.getString("place_id");
                     facility.serial = jsonObject.getString("serial");
+                    facility.o_serial = jsonObject.getString("o_serial");
                     facility.type = Integer.parseInt(jsonObject.getString("type"));
                     facility.super_manager = jsonObject.getString("super_manager");
-                    facility.purpose = jsonObject.getString("purpose");
                     facility.subcontractor = jsonObject.getString("subcontractor");
                     facility.building = jsonObject.getString("building");
                     facility.floor = jsonObject.getString("floor");
                     facility.spot = jsonObject.getString("spot");
+                    facility.cube_result = jsonObject.getString("cube_result").equals("0") ? "" : jsonObject.getString("cube_result");
+                    facility.danger_result = jsonObject.getString("danger_result").equals("0") ? "" : jsonObject.getString("danger_result");
+                    facility.purpose = jsonObject.getString("purpose");
                     facility.started_at = getDateFromString(jsonObject.getString("started_at"));
                     facility.finished_at = getDateFromString(jsonObject.getString("finished_at"));
                     facility.edit_started_at = getDateFromString(jsonObject.getString("edit_started_at"));
@@ -705,23 +708,18 @@ public class API {
         if(!super_manager.isEmpty()) {
             values.put("super_manager", super_manager);
         }
-
         if(type > 0) {
             values.put("type", type);
         }
-
         if(!subcontractor.isEmpty()) {
             values.put("subcontractor", subcontractor);
         }
-
         if(!building.isEmpty()) {
             values.put("building", building);
         }
-
         if(!floor.isEmpty()) {
             values.put("floor", floor);
         }
-
         if(!spot.isEmpty()) {
             values.put("spot", spot);
         }
@@ -738,27 +736,15 @@ public class API {
                     JSONObject jsonObject = new JSONObject(result);
 
                     String typeString = jsonObject.getString("type");
-
                     String[] str_types = typeString.split(",");
 
-                    int[] int_types;
+                    int[] int_types = new int[str_types.length];
 
+                    int i = 0;
 
-                    if(typeString.isEmpty()) {
+                    for(String str_type : str_types) {
 
-                        int_types = new int[0];
-
-                    } else {
-
-                        int_types = new int[str_types.length];
-
-                        int i = 0;
-
-                        for(String str_type : str_types) {
-
-                            int_types[i++] = Integer.parseInt(str_type);
-                        }
-
+                        int_types[i++] = Integer.parseInt(str_type);
                     }
 
                     facilityInfo.types = int_types;
@@ -786,7 +772,7 @@ public class API {
         new NetworkTask(url, values, true, networkCallback).execute();
     }
 
-    public void searchFacility(String place_id, String serial, int type, String super_manager, String subcontractor, String building, String floor, String spot) {
+    public void searchFacility(String place_id, String serial, int type, String super_manager, String subcontractor, String building, String floor, String spot, int button_right, String filter) {
 
         String url = FACILITY_SEARCH;
 
@@ -822,6 +808,14 @@ public class API {
 
         if(!spot.isEmpty()) {
             values.put("spot", spot);
+        }
+
+        if(button_right > 0) {
+            values.put("button_right", button_right);
+        }
+
+        if(filter != null && !filter.isEmpty()) {
+            values.put("filter", filter);
         }
         /*
         for(Map.Entry<String, Object> stringObjectEntry : values.valueSet()) {
@@ -863,6 +857,7 @@ public class API {
                         String expired_at = jsonObject.getString("expired_at");
                         String created_at = jsonObject.getString("created_at");
 
+
                         Facility facility = new Facility();
 
                         facility.id = id;
@@ -882,6 +877,10 @@ public class API {
                         facility.dis_finished_at = getDateFromString(dis_finished_at);
                         facility.expired_at = getDateFromString(expired_at);
                         facility.created_at = getDateFromString(created_at);
+
+                        if(jsonObject.has("taskplan_type") && jsonObject.getString("taskplan_type") != "null") {
+                            facility.taskplan_type = jsonObject.getString("taskplan_type");
+                        }
 
                         facilities.add(facility);
 
@@ -1150,6 +1149,34 @@ public class API {
     }
     */
 
+    /*-------------------------------------------작업관련-------------------------------------------*/
+
+    public void addTask(String team_id, String facility_id, int manday, int type) {
+
+        String url = TASK_ADD;
+
+        ContentValues values = new ContentValues();
+        values.put("team_id", team_id);
+        values.put("facility_id", facility_id);
+        values.put("manday", manday);
+        values.put("type", type);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+    }
+
     /*-----------------------------------------작업계획관련-----------------------------------------*/
 
     public void getTaskPlan(String place_id) {
@@ -1197,6 +1224,7 @@ public class API {
                         taskListItem.serial = construct_jsonObject.getString("serial");
                         taskListItem.location = construct_jsonObject.getString("building") + " " + construct_jsonObject.getString("floor") + " " + construct_jsonObject.getString("spot");
                         taskListItem.teamName = construct_jsonObject.getString("team_name");
+                        taskListItem.taskplan = construct_jsonObject.getInt("taskplan");
 
                         construct_planned_facilities.add(taskListItem);
                     }
@@ -1210,6 +1238,7 @@ public class API {
                         taskListItem.serial = edit_jsonObject.getString("serial");
                         taskListItem.location = edit_jsonObject.getString("building") + " " + edit_jsonObject.getString("floor") + " " + edit_jsonObject.getString("spot");
                         taskListItem.teamName = edit_jsonObject.getString("team_name");
+                        taskListItem.taskplan = edit_jsonObject.getInt("taskplan");
 
                         edit_planned_facilities.add(taskListItem);
                     }
@@ -1223,6 +1252,7 @@ public class API {
                         taskListItem.serial = destruct_jsonObject.getString("serial");
                         taskListItem.location = destruct_jsonObject.getString("building") + " " + destruct_jsonObject.getString("floor") + " " + destruct_jsonObject.getString("spot");
                         taskListItem.teamName = destruct_jsonObject.getString("team_name");
+                        taskListItem.taskplan = destruct_jsonObject.getInt("taskplan");
 
                         desturct_planned_facilities.add(taskListItem);
                     }

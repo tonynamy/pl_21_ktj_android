@@ -7,13 +7,16 @@ public class Facility {
     public String id;
     public String place_id;
     public String serial;
+    public String o_serial;
     public int type;
     public String super_manager;
-    public String purpose;
     public String subcontractor;
     public String building;
     public String floor;
     public String spot;
+    public String cube_result;
+    public String danger_result;
+    public String purpose;
     public Date started_at;
     public Date finished_at;
     public Date edit_started_at;
