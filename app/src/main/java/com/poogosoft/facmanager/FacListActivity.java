@@ -75,7 +75,13 @@ public class FacListActivity extends AppCompatActivity {
         } else if(button_right == ButtonRight.TEAM_LEADER) {
             textFacListTitle.setText("팀장님 작업조회");
         } else {
-            textFacListTitle.setText(super_manager_name + " 담당자 조회");
+            if(super_manager_name.equals("")){
+                textFacListTitle.setText("전체 조회");
+            }else if(super_manager_name.contains(" ")) {
+                textFacListTitle.setText(super_manager_name + " 조회");
+            } else {
+                textFacListTitle.setText(super_manager_name + " 담당자 조회");
+            }
         }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);

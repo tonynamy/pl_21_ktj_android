@@ -335,16 +335,17 @@ public class MenuActivity extends AppCompatActivity {
                 textDialogSubmit8.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(spinnerSelectDialog.getSelectedItemPosition() == 0) {
-                            Toast.makeText(v.getContext(), "담당자가 선택되지 않았습니다.\n담당자를 선택해주세요.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Intent intent = new Intent(v.getContext(), FacSearchActivity.class);
-                            intent.putExtra("level", level);
-                            intent.putExtra("super_manager_name", spinnerSelectDialog.getSelectedItem().toString());
-                            intent.putExtra("place_id", place_id);
-                            startActivity(intent);
-                            dialog.dismiss();
+                        String super_manager_name = "";
+                        if(spinnerSelectDialog.getSelectedItemPosition() != 0) {
+                            super_manager_name = spinnerSelectDialog.getSelectedItem().toString();
                         }
+                        Intent intent = new Intent(v.getContext(), FacSearchActivity.class);
+                        intent.putExtra("level", level);
+                        intent.putExtra("super_manager_name", super_manager_name);
+                        intent.putExtra("place_id", place_id);
+                        intent.putExtra("team_id", team_id);
+                        startActivity(intent);
+                        dialog.dismiss();
                     }
                 });
             }
@@ -451,16 +452,17 @@ public class MenuActivity extends AppCompatActivity {
         textDialogSubmit9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(spinnerSuperManager.getSelectedItemPosition() == 0) {
-                    Toast.makeText(v.getContext(), "담당자가 선택되지 않았습니다.\n담당자를 선택해주세요.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent intent = new Intent(v.getContext(), FacSearchActivity.class);
-                    intent.putExtra("level", level);
-                    intent.putExtra("super_manager_name", spinnerSuperManager.getSelectedItem().toString());
-                    intent.putExtra("place_id", places.get(spinnerPlace.getSelectedItemPosition()).id);
-                    startActivity(intent);
-                    dialog.dismiss();
+                String super_manager_name = "";
+                if(spinnerSuperManager.getSelectedItemPosition() != 0) {
+                    super_manager_name = spinnerSuperManager.getSelectedItem().toString();
                 }
+                Intent intent = new Intent(v.getContext(), FacSearchActivity.class);
+                intent.putExtra("level", level);
+                intent.putExtra("super_manager_name", super_manager_name);
+                intent.putExtra("place_id", places.get(spinnerPlace.getSelectedItemPosition()).id);
+                intent.putExtra("team_id", team_id);
+                startActivity(intent);
+                dialog.dismiss();
             }
         });
 

@@ -44,6 +44,7 @@ public class API {
     private static String FACILITY_SEARCH = ROOT_URL + "facility_search";
     private static String FACILITY_EDIT_STATE = ROOT_URL + "facility_edit_state";
     private static String FACILITY_EDIT_SUPER_MANAGER = ROOT_URL + "facility_edit_super_manager";
+    private static String FACILITY_EDIT_SIZE = ROOT_URL + "facility_edit_size";
     private static String FACILITY_EDIT_PURPOSE = ROOT_URL + "facility_edit_purpose";
     private static String FACILITY_EDIT_EXPIRED_AT = ROOT_URL + "facility_edit_expired_at";
     private static String TASK_ADD = ROOT_URL + "task_add";
@@ -975,6 +976,30 @@ public class API {
 
         new NetworkTask(url, values, true, networkCallback).execute();
     }
+    public void editFacilitySize(String facility_id, String size, Boolean is_danger) {
+
+        String url = FACILITY_EDIT_SIZE;
+
+        ContentValues values = new ContentValues();
+        values.put("id", facility_id);
+        values.put("size", size);
+        values.put("is_danger", is_danger);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+                apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+    }
 
     public void editFacilityExpiredAt(String facility_id, Date expired_at) {
 
@@ -1290,24 +1315,63 @@ public class API {
             @Override
             public void onSuccess(String result) {
 
-                ArrayList<TaskListItem> taskList = new ArrayList<>();
+                ArrayList<TaskListItem> plan_task = new ArrayList<>();
+                ArrayList<TaskListItem> recent_task = new ArrayList<>();
+
+                List<ArrayList<TaskListItem>> response = new ArrayList<>(2);
 
                 try {
-                    JSONArray jsonArray = new JSONArray(result);
 
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    JSONArray plan = jsonObject.getJSONArray("plan");
+                    for(int i = 0; i < plan.length(); i++) {
+                        JSONObject plan_jsonObject = plan.getJSONObject(i);
 
                         TaskListItem taskListItem = new TaskListItem();
-                        taskListItem.id = jsonObject.getString("id");
-                        taskListItem.serial = jsonObject.getString("serial");
-                        taskListItem.location = jsonObject.getString("building") + " " + jsonObject.getString("floor") + " " + jsonObject.getString("spot");
-                        taskListItem.taskplan = jsonObject.getInt("taskplan");
+                        taskListItem.id = plan_jsonObject.getString("id");
+                        taskListItem.serial = plan_jsonObject.getString("serial");
+                        taskListItem.location = plan_jsonObject.getString("building") + " " + plan_jsonObject.getString("floor") + " " + plan_jsonObject.getString("spot");
+                        taskListItem.taskplan = plan_jsonObject.getInt("taskplan");
 
-                        taskList.add(taskListItem);
+                        plan_task.add(taskListItem);
                     }
 
-                    apiCallback.onSuccess(taskList);
+                    JSONArray recent = jsonObject.getJSONArray("recent");
+                    for(int i = 0; i < recent.length(); i++) {
+                        JSONObject recent_jsonObject = recent.getJSONObject(i);
+
+                        TaskListItem taskListItem = new TaskListItem();
+                        taskListItem.id = recent_jsonObject.getString("id");
+                        taskListItem.serial = recent_jsonObject.getString("serial");
+                        taskListItem.location = recent_jsonObject.getString("building") + " " + recent_jsonObject.getString("floor") + " " + recent_jsonObject.getString("spot");
+                        if(jsonObject.has("taskplan")) { taskListItem.taskplan = recent_jsonObject.getInt("taskplan"); }
+
+                        String[] state_column = {"설치전", "설치중", "승인완료", "수정중", "수정완료", "해체중", "해체완료"};
+                        String[] recent_state_arr = {
+                                recent_jsonObject.getString("created_at"),
+                                recent_jsonObject.getString("started_at"),
+                                recent_jsonObject.getString("finished_at"),
+                                recent_jsonObject.getString("edit_started_at"),
+                                recent_jsonObject.getString("edit_finished_at"),
+                                recent_jsonObject.getString("dis_started_at"),
+                                recent_jsonObject.getString("dis_finished_at"),
+                        };
+                        taskListItem.progress = "설치전";
+                        for(int s = recent_state_arr.length-1; s >= 0; s--) {
+                            if(!recent_state_arr[s].equals("null")) {
+                                taskListItem.progress = state_column[s];
+                                break;
+                            }
+                        }
+
+                        recent_task.add(taskListItem);
+                    }
+
+                    response.add(plan_task);
+                    response.add(recent_task);
+
+                    apiCallback.onSuccess(response);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

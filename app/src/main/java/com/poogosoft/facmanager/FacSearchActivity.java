@@ -78,7 +78,13 @@ public class FacSearchActivity extends AppCompatActivity {
         } else if(button_right == ButtonRight.TEAM_LEADER) {
             textFacFilterTitle.setText("팀장님 작업조회");
         } else {
-            textFacFilterTitle.setText(super_manager_name + " 담당자 조회");
+            if(super_manager_name.equals("")){
+                textFacFilterTitle.setText("전체 조회");
+            }else if(super_manager_name.contains(" ")) {
+                textFacFilterTitle.setText(super_manager_name + " 조회");
+            } else {
+                textFacFilterTitle.setText(super_manager_name + " 담당자 조회");
+            }
         }
 
         //공종스피너

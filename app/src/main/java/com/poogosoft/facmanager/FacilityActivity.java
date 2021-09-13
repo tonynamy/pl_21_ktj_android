@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -127,16 +128,14 @@ public class FacilityActivity extends AppCompatActivity {
         //관리자 버튼으로 왔을시
         if(button_right == ButtonRight.MANAGER) {
             buttonFacManger.setVisibility(View.VISIBLE);
-            buttonTaskPlan.setVisibility(View.VISIBLE);
-        } else if(button_right == ButtonRight.TEAM_LEADER) {
+            //buttonTaskPlan.setVisibility(View.VISIBLE);
+        } else if(button_right == ButtonRight.TEAM_LEADER && !team_id.isEmpty()) {
             layoutTeamLeader.setVisibility(View.VISIBLE);
-        } else {
-            if(level == 2){
-                buttonFacManger.setVisibility(View.VISIBLE);
-                buttonTaskPlan.setVisibility(View.VISIBLE);
-            } else if(level == 1) {
-                layoutTeamLeader.setVisibility(View.VISIBLE);
-            }
+        } else if(level == 2 || level == 3 || level == 4) {
+            buttonFacManger.setVisibility(View.VISIBLE);
+            //buttonTaskPlan.setVisibility(View.VISIBLE);
+        } else if(level == 1 && !team_id.isEmpty()) {
+            layoutTeamLeader.setVisibility(View.VISIBLE);
         }
 
         //상태변경 버튼 눌렀을때
@@ -351,8 +350,80 @@ public class FacilityActivity extends AppCompatActivity {
         textFacSize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(facility.cube_result.isEmpty() && facility.danger_result.isEmpty()) {
-                    Toast.makeText(v.getContext(), "물량등록을 눌렀습니다.", Toast.LENGTH_SHORT).show();
+                if(facility.cube_result.isEmpty() && facility.danger_result.isEmpty() && button_right==ButtonRight.MANAGER) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    View view = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_fac_size_input, null);
+                    builder.setView(view);
+
+                    RadioButton radioRube = view.findViewById(R.id.radioRube);
+                    RadioButton radioHebe = view.findViewById(R.id.radioHebe);
+                    EditText eTextFacSizeInput = view.findViewById(R.id.eTextFacSizeInput);
+                    TextView textDialogUnit = view.findViewById(R.id.textDialogUnit);
+                    TextView textDialogCancel11 = view.findViewById(R.id.textDialogCancel11);
+                    TextView textDialogSubmit11 = view.findViewById(R.id.textDialogSubmit11);
+                    AlertDialog dialog = builder.create();
+
+                    radioRube.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if(isChecked) { textDialogUnit.setText("m3"); }
+                        }
+                    });
+                    radioHebe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if(isChecked) { textDialogUnit.setText("m2"); }
+                        }
+                    });
+
+                    textDialogCancel11.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    //확인버튼
+                    textDialogSubmit11.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            String size_string = String.valueOf(eTextFacSizeInput.getText());
+                            try {
+                                Double size = Double.parseDouble(size_string);
+                                Boolean is_danger = radioHebe.isChecked() ? true : false;
+
+                                if(size > 0) {
+                                    API.APICallback apiCallback = new API.APICallback() {
+                                        @Override
+                                        public void onSuccess(Object data) {
+                                            getFacility();
+                                            dialog.dismiss();
+                                            Toast.makeText(v.getContext(), "물량 등록에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMsg) {
+                                            dialog.dismiss();
+                                            Toast.makeText(v.getContext(), "물량 등록에 실패했습니다. 사유: " + errorMsg, Toast.LENGTH_SHORT).show();
+                                        }
+                                    };
+                                    API api = new API.Builder(apiCallback).build();
+                                    api.editFacilitySize(facility_id, String.format("%.1f", size), is_danger);
+
+                                } else {
+                                    Toast.makeText(v.getContext(), "0보다 큰 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                }
+
+                            } catch (Exception e) {
+                                Toast.makeText(v.getContext(), "올바른 값이 아닙니다.", Toast.LENGTH_SHORT).show();
+                            }
+
+
+                        }
+                    });
+
+                    dialog.show();
                 }
             }
         });
@@ -374,9 +445,7 @@ public class FacilityActivity extends AppCompatActivity {
                         DatePicker pickerExpiredDate = view.findViewById(R.id.pickerExpiredDate);
                         TextView textDialogCancel3 = view.findViewById(R.id.textDialogCancel3);
                         TextView textDialogSubmit3 = view.findViewById(R.id.textDialogSubmit3);
-
                         AlertDialog dialog = builder.create();
-                        dialog.show();
 
                         textAfter3month.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -439,6 +508,8 @@ public class FacilityActivity extends AppCompatActivity {
                                 }
                             }
                         });
+
+                        dialog.show();
                     }
                 }
             }
@@ -759,14 +830,19 @@ public class FacilityActivity extends AppCompatActivity {
         }
 
         //사용기간
-        if(facility.finished_at != null){
+        if(facility.finished_at != null) {
             layoutExpiredDate.setVisibility(View.VISIBLE);
-            if(facility.expired_at != null){
+            if(facility.expired_at != null) {
+                Date now = Calendar.getInstance().getTime();
+                if(now.after(facility.expired_at)) {
+                    textExpiredDate.setTextColor(Color.RED);
+                } else {
+                    textExpiredDate.setTextColor(Color.BLACK);
+                }
                 SimpleDateFormat expiredDateFormat = new SimpleDateFormat("~ yyyy. MM. dd");
                 textExpiredDate.setText(expiredDateFormat.format(facility.expired_at));
-                textExpiredDate.setTextColor(Color.BLACK);
             }
-            else{
+            else {
                 textExpiredDate.setText("만료일등록");
                 textExpiredDate.setTextColor(Color.BLUE);
             }
@@ -774,21 +850,8 @@ public class FacilityActivity extends AppCompatActivity {
             layoutExpiredDate.setVisibility(View.GONE);
         }
 
-        //관리자 버튼 활성화 부분
-        if(button_right == ButtonRight.MANAGER){
-            if(textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
-                if(facility.taskplan_type != null) {
-                    buttonTaskPlan.setText("작업계획 수정");
-                } else {
-                    buttonTaskPlan.setText("작업계획");
-                }
-                buttonTaskPlan.setVisibility(View.VISIBLE);
-            } else {
-                buttonTaskPlan.setVisibility(View.GONE);
-            }
-
         //팀장님 버튼 활성화 부분
-        } else if(button_right == ButtonRight.TEAM_LEADER) {
+        if(!team_id.isEmpty()) {
 
             buttonTask1.setVisibility(View.INVISIBLE);
             buttonTask2.setVisibility(View.INVISIBLE);
@@ -825,7 +888,21 @@ public class FacilityActivity extends AppCompatActivity {
             }
         }
 
-
+        //작업계획 버튼 활성화 부분
+        if(level == 2 || level == 3 || level == 4) {
+            if(button_right != ButtonRight.TEAM_LEADER) {
+                if(textTaskState.getText() == "설치전" || textTaskState.getText() == "승인완료" || textTaskState.getText() == "수정완료") {
+                    if(facility.taskplan_type != null) {
+                        buttonTaskPlan.setText("작업계획 수정");
+                    } else {
+                        buttonTaskPlan.setText("작업계획");
+                    }
+                    buttonTaskPlan.setVisibility(View.VISIBLE);
+                } else {
+                    buttonTaskPlan.setVisibility(View.GONE);
+                }
+            }
+        }
 
         //모든과정이 끝나면 안내문 지우고 레이아웃 보여주기
         textFacilityResult.setVisibility(View.GONE);

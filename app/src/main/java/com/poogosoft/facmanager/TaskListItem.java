@@ -6,9 +6,10 @@ public class TaskListItem {
 
     String id;
     String serial;
+    Date expired_date;
     String location;
     String teamName;
     int taskplan;
-    Date expired_date;
+    String progress;
 
 }

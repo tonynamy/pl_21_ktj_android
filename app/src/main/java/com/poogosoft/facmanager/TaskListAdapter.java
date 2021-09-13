@@ -27,6 +27,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         this.onItemClickListener = onItemClickListener;
     }
 
+    Boolean is_expired_list = false;
     ArrayList<TaskListItem> taskListItemList = new ArrayList<>();
 
     //add Item
@@ -66,21 +67,23 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
         TextView txtTaskSerial;
         ImageView imgPlanCircle2;
-        TextView textTaskPeriod;
         LinearLayout layoutTaskPlan;
+        TextView textTaskPeriod;
         TextView txtTaskLocation;
         TextView txtTaskTeamName;
         TextView txtTaskPlan;
+        TextView txtTaskState;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             txtTaskSerial = itemView.findViewById(R.id.txtTaskSerial);
             imgPlanCircle2 = itemView.findViewById(R.id.imgPlanCircle2);
-            textTaskPeriod = itemView.findViewById(R.id.textTaskPeriod);
             layoutTaskPlan = itemView.findViewById(R.id.layoutTaskPlan);
+            textTaskPeriod = itemView.findViewById(R.id.textTaskPeriod);
             txtTaskLocation = itemView.findViewById(R.id.txtTaskLocation);
             txtTaskTeamName = itemView.findViewById(R.id.txtTaskTeamName);
             txtTaskPlan = itemView.findViewById(R.id.txtTaskPlan);
+            txtTaskState = itemView.findViewById(R.id.txtTaskState);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -94,18 +97,34 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
             //승인번호
             txtTaskSerial.setText(taskListItem.serial);
 
-            //관리자 작업조회시는 팀이름이 나옵니다
-            if(taskListItem.teamName != null) {
-                txtTaskTeamName.setText(taskListItem.teamName);
-                txtTaskTeamName.setVisibility(View.VISIBLE);
-                txtTaskPlan.setVisibility(View.GONE);
+            //기간만료 임박
+            if(is_expired_list){
+                layoutTaskPlan.setVisibility(View.GONE);
+                imgPlanCircle2.setVisibility(View.GONE);
+                Date now = Calendar.getInstance().getTime();
+                if(taskListItem.expired_date != null && now.after(taskListItem.expired_date)) {
+                    textTaskPeriod.setTextColor(Color.RED);
+                    textTaskPeriod.setText("만료");
+                } else {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("~ yyyy. MM. dd");
+                    String dateString = simpleDateFormat.format(taskListItem.expired_date);
+                    textTaskPeriod.setTextColor(Color.BLACK);
+                    textTaskPeriod.setText(dateString);
+                }
             } else {
-                txtTaskTeamName.setVisibility(View.GONE);
-                txtTaskPlan.setVisibility(View.VISIBLE);
+                textTaskPeriod.setVisibility(View.GONE);
             }
 
-            //팀 작업조회시에는 계획내용이 나옵니다
-            if(taskListItem.taskplan != 0) {
+            //설치위치
+            if(taskListItem.location != null && !taskListItem.location.isEmpty()){
+                txtTaskLocation.setVisibility(View.VISIBLE);
+                txtTaskLocation.setText(taskListItem.location);
+            } else {
+                txtTaskLocation.setVisibility(View.INVISIBLE);
+            }
+
+            //팀이름인지, 작업계획인지, 진행상황인지
+            if(taskListItem.taskplan > 0) {
                 imgPlanCircle2.setVisibility(View.VISIBLE);
                 String stringTaskPlan = "";
                 switch (taskListItem.taskplan) {
@@ -122,33 +141,29 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
                         imgPlanCircle2.setColorFilter(Color.parseColor("#888899"));
                         break;
                 }
-                txtTaskPlan.setText(stringTaskPlan);
-            } else {
-                layoutTaskPlan.setVisibility(View.GONE);
-            }
 
-            //설치위치
-            if(taskListItem.location != null){
-                txtTaskLocation.setText(taskListItem.location);
-            }else{
-                txtTaskLocation.setVisibility(View.INVISIBLE);
-            }
-
-            //기간만료 임박
-            if(taskListItem.expired_date != null){
-                imgPlanCircle2.setVisibility(View.GONE);
-                Date now = Calendar.getInstance().getTime();
-                if(taskListItem.expired_date != null && now.after(taskListItem.expired_date)) {
-                    textTaskPeriod.setTextColor(Color.RED);
-                    textTaskPeriod.setText("만료");
+                if(taskListItem.teamName != null) {
+                    txtTaskTeamName.setText(taskListItem.teamName);
+                    txtTaskTeamName.setVisibility(View.VISIBLE);
+                    txtTaskPlan.setVisibility(View.GONE);
+                    txtTaskState.setVisibility(View.GONE);
                 } else {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("~ yyyy. MM. dd");
-                    String dateString = simpleDateFormat.format(taskListItem.expired_date);
-                    textTaskPeriod.setTextColor(Color.BLACK);
-                    textTaskPeriod.setText(dateString);
+                    txtTaskPlan.setText(stringTaskPlan);
+                    txtTaskPlan.setVisibility(View.VISIBLE);
+                    txtTaskTeamName.setVisibility(View.GONE);
+                    txtTaskState.setVisibility(View.GONE);
                 }
             } else {
-                textTaskPeriod.setVisibility(View.GONE);
+                imgPlanCircle2.setVisibility(View.GONE);
+                txtTaskTeamName.setVisibility(View.GONE);
+                txtTaskPlan.setVisibility(View.GONE);
+
+                if (taskListItem.progress != null) {
+                    txtTaskState.setText(taskListItem.progress);
+                    txtTaskState.setVisibility(View.VISIBLE);
+                } else {
+                    txtTaskState.setVisibility(View.GONE);
+                }
             }
 
         }

@@ -67,6 +67,7 @@ public class TaskListActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerExpiredSoon.setLayoutManager(layoutManager);
         adapterExpiredSoon = new TaskListAdapter();
+        adapterExpiredSoon.is_expired_list = true;
         recyclerExpiredSoon.setAdapter(adapterExpiredSoon);
 
         //설치예정작업

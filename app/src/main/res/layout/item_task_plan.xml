@@ -33,6 +33,7 @@
             android:layout_gravity="bottom"
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
+            android:visibility="invisible"
             app:srcCompat="@drawable/vector_circle" />
 
         <TextView
@@ -76,6 +77,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="작업계획"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/txtTaskState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="진행상황"
             android:textSize="24sp" />
 
     </LinearLayout>
