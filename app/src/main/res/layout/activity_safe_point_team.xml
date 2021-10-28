@@ -7,19 +7,20 @@
     tools:context=".TaskListTeamActivity">
 
     <TextView
+        android:id="@+id/textSafePointTeamTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="팀장님 작업조회"
+        android:text="팀 안전점수"
         android:textColor="@color/black"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
-        android:id="@+id/scrollView3"
+        android:id="@+id/scrollSafePointTeam"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
@@ -29,63 +30,89 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/textbox"
-        app:layout_constraintBottom_toTopOf="@+id/buttonAllFacility2"
+        app:layout_constraintBottom_toTopOf="@id/buttonBack2SafePoint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/layoutSafePointTeam"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/layoutPlanTask"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="horizontal"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="계획된 작업"
+                    android:layout_weight="6"
+                    android:ellipsize="none"
+                    android:singleLine="true"
+                    android:text="일시"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclePlanTask"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:ellipsize="none"
+                    android:gravity="center_horizontal"
+                    android:singleLine="true"
+                    android:text="내용"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:ellipsize="none"
+                    android:gravity="right"
+                    android:singleLine="true"
+                    android:text="점수"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleSafePointTeam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
             <LinearLayout
-                android:id="@+id/layoutRecentTask"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@color/black" />
+                android:orientation="horizontal"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="최근 3일내 작업"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="합계"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycleRecentTask"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/textSafePointTeamTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -94,7 +121,7 @@
     </ScrollView>
 
     <TextView
-        android:id="@+id/textTeamTaskResult"
+        android:id="@+id/textSafePointTeamResult"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -104,12 +131,12 @@
         android:layout_marginRight="16dp"
         android:text="작업계획을 불러오는중입니다."
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/scrollView3"
-        app:layout_constraintStart_toStartOf="@+id/scrollView3"
-        app:layout_constraintTop_toTopOf="@+id/scrollView3" />
+        app:layout_constraintEnd_toEndOf="@id/scrollSafePointTeam"
+        app:layout_constraintStart_toStartOf="@id/scrollSafePointTeam"
+        app:layout_constraintTop_toTopOf="@id/scrollSafePointTeam" />
 
     <Button
-        android:id="@+id/buttonAllFacility2"
+        android:id="@+id/buttonBack2SafePoint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -118,7 +145,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/buttonbox"
-        android:text="전체조회"
+        android:text="목록으로"
         android:textSize="24sp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

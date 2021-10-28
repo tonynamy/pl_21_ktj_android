@@ -8,7 +8,7 @@ public class TaskListItem {
     String serial;
     Date expired_date;
     String location;
-    String teamName;
+    String team_name;
     int taskplan;
     String progress;
 

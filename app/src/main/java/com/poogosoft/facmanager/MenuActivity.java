@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,8 +18,17 @@ import android.widget.Toast;
 import com.poogosoft.facmanager.models.Place;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MenuActivity extends AppCompatActivity {
+
+    public static class Dashboard {
+        double cube;
+        double square;
+        int manday;
+        int safe_point;
+    }
 
     int level;
     String place_id;
@@ -29,10 +39,15 @@ public class MenuActivity extends AppCompatActivity {
     ArrayList<Place> places;
 
     TextView txtInfo;
+    LinearLayout layoutTeamBoard;
+    LinearLayout layoutProductivity;
+    TextView textSafePoint;
     Button btnAttendMenu;
     Button btnTeamLeaderMenu;
     Button btnManagerMenu;
     Button btnSuperManager;
+    Button btnProductivity;
+    Button btnSafePoint;
     Button btnAdminMenu;
 
     @Override
@@ -49,24 +64,38 @@ public class MenuActivity extends AppCompatActivity {
 
         //뷰에서 가져오기
         txtInfo = findViewById(R.id.txtInfo);
+        layoutTeamBoard = findViewById(R.id.layoutTeamBoard);
+        layoutProductivity = findViewById(R.id.layoutProductivity);
+        textSafePoint = findViewById(R.id.textSafePoint);
         btnAttendMenu = findViewById(R.id.btnAttendMenu);
         btnTeamLeaderMenu = findViewById(R.id.btnTeamLeaderMenu);
         btnManagerMenu = findViewById(R.id.btnManagerMenu);
         btnSuperManager = findViewById(R.id.btnSuperManagerMenu);
+        btnProductivity = findViewById(R.id.btnProductivity);
+        btnSafePoint = findViewById(R.id.btnSafePoint);
         btnAdminMenu = findViewById(R.id.btnAdminMenu);
 
         //권한없는 메뉴는 모두 안보이게 하기
+        layoutTeamBoard.setVisibility(View.GONE);
         btnAttendMenu.setVisibility(View.GONE);
         btnTeamLeaderMenu.setVisibility(View.GONE);
         btnManagerMenu.setVisibility(View.GONE);
         btnSuperManager.setVisibility(View.GONE);
+        btnProductivity.setVisibility(View.GONE);
+        btnSafePoint.setVisibility(View.GONE);
         btnAdminMenu.setVisibility(View.GONE);
 
         //팀장(1), 관리자(2), 최고관리자(3), 어드민(4) 일때 출퇴근관리 조회
         if (level == 1 || level == 2 || level == 3 || level == 4) {
             btnAttendMenu.setVisibility(View.VISIBLE);
             //내 팀이 있을때 팀장님메뉴 조회
-            if(!team_id.isEmpty() && level != 4){ btnTeamLeaderMenu.setVisibility(View.VISIBLE); }
+            if(!team_id.isEmpty() && level != 4){
+                layoutTeamBoard.setVisibility(View.VISIBLE);
+                btnTeamLeaderMenu.setVisibility(View.VISIBLE);
+            } else if (level == 2 || level == 3 || level == 4) {
+                btnProductivity.setVisibility(View.VISIBLE);
+                btnSafePoint.setVisibility(View.VISIBLE);
+            }
         }
         //관리자(2), 최고관리자(3), 어드민(4) 일때 관리자메뉴 조회
         if (level == 2 || level == 3 || level == 4) {
@@ -103,6 +132,21 @@ public class MenuActivity extends AppCompatActivity {
         }
         txtInfo.setText(place_name + " " + user_name + " " + role_name);
 
+        //대시보드 - 생산성(팀장)
+        layoutProductivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewProductivity();
+            }
+        });
+
+        //대시보드 - 안전점수(팀장)
+        textSafePoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewSafePoint();
+            }
+        });
 
         //출퇴근관리 버튼
         btnAttendMenu.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +212,22 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
+        //생산성 버튼(관리자)
+        btnProductivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewProductivity();
+            }
+        });
+
+        //안전점수 버튼(관리자)
+        btnSafePoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewSafePoint();
+            }
+        });
+
         //최고관리자메뉴 버튼
         btnAdminMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,6 +238,64 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        loadProductivity();
+    }
+
+    private void loadProductivity() {
+
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH) + 1;
+
+        TextView dashboard_subject = findViewById(R.id.textView5);
+        TextView productivity_text = findViewById(R.id.textView6);
+        TextView manday_text = findViewById(R.id.textView7);
+        TextView safepoint_text = findViewById(R.id.textSafePoint);
+
+        API.APICallback apiCallback = new API.APICallback() {
+            @Override
+            public void onSuccess(Object data) {
+
+                dashboard_subject.setText(month + "월의 생산성");
+
+                Dashboard dashboard = (Dashboard) data;
+
+                productivity_text.setText(dashboard.cube + " + " + dashboard.square);
+                manday_text.setText(String.valueOf(dashboard.manday));
+                safepoint_text.setText(String.valueOf(100 + dashboard.safe_point));
+            }
+
+            @Override
+            public void onFailed(String errorMsg) {
+                Toast.makeText(MenuActivity.this, "생산성 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        API api = new API.Builder(apiCallback).build();
+        api.getTeamProductivity(place_id, team_id);
+
+
+    }
+
+    //생산성 보기
+    private void ViewProductivity() {
+
+        if(level == 4) {
+            choicePlaceDialog(this, ProductivityActivity.class);
+        } else {
+            Intent intent = new Intent(this, ProductivityActivity.class);
+            intent.putExtra("place_id", place_id);
+            startActivity(intent);
+        }
+
+    }
+
+    //안전점수 보기
+    private void ViewSafePoint() {
+        Intent intent = new Intent(this, SafePointActivity.class);
+        intent.putExtra("team_id", team_id);
+        intent.putExtra("place_id", place_id);
+        startActivity(intent);
     }
 
     //출퇴근관리 - 팀장일경우

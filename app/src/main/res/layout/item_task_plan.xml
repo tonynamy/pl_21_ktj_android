@@ -10,6 +10,7 @@
     android:paddingBottom="4dp">
 
     <LinearLayout
+        android:id="@+id/layoutSerialDate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">

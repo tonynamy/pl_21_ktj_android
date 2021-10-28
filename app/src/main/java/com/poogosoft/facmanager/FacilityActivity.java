@@ -37,7 +37,7 @@ public class FacilityActivity extends AppCompatActivity {
     String place_id;
     String team_id;
     String facility_id;
-    String super_manager_name;
+    //String super_manager_name;
     int button_right;
 
     Facility facility = new Facility();
@@ -81,7 +81,7 @@ public class FacilityActivity extends AppCompatActivity {
         team_id = getIntent().getStringExtra("team_id");
         if(team_id == null) { team_id = ""; }
         facility_id = getIntent().getStringExtra("facility_id");
-        super_manager_name = getIntent().getStringExtra("super_manager_name");
+        //super_manager_name = getIntent().getStringExtra("super_manager_name");
         button_right = getIntent().getIntExtra("button_right", 0);
 
         //뷰에서 가져오기
@@ -124,6 +124,7 @@ public class FacilityActivity extends AppCompatActivity {
         buttonFacManger.setVisibility(View.GONE);
         layoutTeamLeader.setVisibility(View.GONE);
         buttonTaskPlan.setVisibility(View.GONE);
+        textExpiredDate.setText("");
 
         //관리자 버튼으로 왔을시
         if(button_right == ButtonRight.MANAGER) {
@@ -432,7 +433,7 @@ public class FacilityActivity extends AppCompatActivity {
         textExpiredDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(facility.finished_at != null) {
+                if(facility.finished_at != null && (!team_id.isEmpty() || level == 2 || level == 3 || level == 4)) {
                     //팀장(1)레벨은 만료일이 공백일때만 등록할수있다
                     if(level != 1 || facility.expired_at == null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -569,15 +570,15 @@ public class FacilityActivity extends AppCompatActivity {
                     };
                     API api = new API.Builder(apiCallback).build();
                     if(taskButton.getText() == "설치") {
-                        api.addTask(team_id, facility.id, manday, 1);
+                        api.addTask(team_id, facility.o_serial, manday, 1);
                     } else if(taskButton.getText() == "수정") {
-                        api.addTask(team_id, facility.id, manday, 2);
+                        api.addTask(team_id, facility.o_serial, manday, 2);
                     } else if(taskButton.getText() == "해체") {
-                        api.addTask(team_id, facility.id, manday, 3);
+                        api.addTask(team_id, facility.o_serial, manday, 3);
                     }
 
                     //Facility 정보 가져오기
-                    getFacility();
+                    //getFacility();
                 }
             });
         }
@@ -711,7 +712,7 @@ public class FacilityActivity extends AppCompatActivity {
                             }
                         };
                         API api = new API.Builder(apiCallback).build();
-                        api.editTaskPlan(facility.id, teams.get(spinPlanTeam.getSelectedItemPosition()).id, type);
+                        api.editTaskPlan(place_id, facility.o_serial, teams.get(spinPlanTeam.getSelectedItemPosition()).id, type);
                     }
                 });
             }
@@ -842,7 +843,7 @@ public class FacilityActivity extends AppCompatActivity {
                 SimpleDateFormat expiredDateFormat = new SimpleDateFormat("~ yyyy. MM. dd");
                 textExpiredDate.setText(expiredDateFormat.format(facility.expired_at));
             }
-            else {
+            else if(!team_id.isEmpty() || level == 2 || level == 3 || level == 4) {
                 textExpiredDate.setText("만료일등록");
                 textExpiredDate.setTextColor(Color.BLUE);
             }
@@ -972,6 +973,7 @@ public class FacilityActivity extends AppCompatActivity {
         API.APICallback apiCallback = new API.APICallback() {
             @Override
             public void onSuccess(Object data) {
+                Toast.makeText(FacilityActivity.this, "작업계획을 삭제했습니다.", Toast.LENGTH_SHORT).show();
                 if(dialog != null) { dialog.dismiss(); }
                 getFacility();
             }
@@ -982,7 +984,7 @@ public class FacilityActivity extends AppCompatActivity {
             }
         };
         API api = new API.Builder(apiCallback).build();
-        api.deleteTaskplan(facility.id);
+        api.deleteTaskplan(place_id, facility.o_serial);
     }
 
 }

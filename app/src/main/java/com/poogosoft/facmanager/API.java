@@ -3,6 +3,7 @@ package com.poogosoft.facmanager;
 import android.content.ContentValues;
 
 import com.poogosoft.facmanager.models.Auth;
+import com.poogosoft.facmanager.models.TaskplanEtc;
 import com.poogosoft.facmanager.models.Facility;
 import com.poogosoft.facmanager.models.FacilityInfo;
 import com.poogosoft.facmanager.models.Place;
@@ -16,13 +17,13 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class API {
 
-    public static String ROOT_URL = "http://49.247.24.170/api/";
+    public static String ROOT_URL = "http://pl-21-ktj.run.goorm.io/api/";
 
     private static String LOGIN = ROOT_URL + "login";
     private static String AUTH_CHECK = ROOT_URL + "auth_check";
@@ -52,7 +53,10 @@ public class API {
     private static String TASKPLAN_TEAM = ROOT_URL + "taskplan_team";
     private static String TASKPLAN_EDIT = ROOT_URL + "taskplan_edit";
     private static String TASKPLAN_DELETE = ROOT_URL + "taskplan_delete";
+    private static String TASKPLAN_ETC = ROOT_URL + "taskplan_etc";
     private static String SUPER_MANAGER = ROOT_URL + "super_manager";
+    private static String PRODUCTIVITY = ROOT_URL + "productivity";
+    private static String DASHBOARD = ROOT_URL + "dashboard";
 
 
     public interface APICallback {
@@ -1176,13 +1180,13 @@ public class API {
 
     /*-------------------------------------------작업관련-------------------------------------------*/
 
-    public void addTask(String team_id, String facility_id, int manday, int type) {
+    public void addTask(String team_id, String facility_serial, int manday, int type) {
 
         String url = TASK_ADD;
 
         ContentValues values = new ContentValues();
         values.put("team_id", team_id);
-        values.put("facility_id", facility_id);
+        values.put("facility_serial", facility_serial);
         values.put("manday", manday);
         values.put("type", type);
 
@@ -1220,6 +1224,7 @@ public class API {
                 ArrayList<TaskListItem> construct_planned_facilities = new ArrayList<>();
                 ArrayList<TaskListItem> edit_planned_facilities = new ArrayList<>();
                 ArrayList<TaskListItem> desturct_planned_facilities = new ArrayList<>();
+                ArrayList<TaskListItem> etc_taskplans = new ArrayList<>();
 
                 List<ArrayList<TaskListItem>> response = new ArrayList<>(4);
 
@@ -1248,7 +1253,7 @@ public class API {
                         taskListItem.id = construct_jsonObject.getString("id");
                         taskListItem.serial = construct_jsonObject.getString("serial");
                         taskListItem.location = construct_jsonObject.getString("building") + " " + construct_jsonObject.getString("floor") + " " + construct_jsonObject.getString("spot");
-                        taskListItem.teamName = construct_jsonObject.getString("team_name");
+                        taskListItem.team_name = construct_jsonObject.getString("team_name");
                         taskListItem.taskplan = construct_jsonObject.getInt("taskplan");
 
                         construct_planned_facilities.add(taskListItem);
@@ -1262,7 +1267,7 @@ public class API {
                         taskListItem.id = edit_jsonObject.getString("id");
                         taskListItem.serial = edit_jsonObject.getString("serial");
                         taskListItem.location = edit_jsonObject.getString("building") + " " + edit_jsonObject.getString("floor") + " " + edit_jsonObject.getString("spot");
-                        taskListItem.teamName = edit_jsonObject.getString("team_name");
+                        taskListItem.team_name = edit_jsonObject.getString("team_name");
                         taskListItem.taskplan = edit_jsonObject.getInt("taskplan");
 
                         edit_planned_facilities.add(taskListItem);
@@ -1276,16 +1281,30 @@ public class API {
                         taskListItem.id = destruct_jsonObject.getString("id");
                         taskListItem.serial = destruct_jsonObject.getString("serial");
                         taskListItem.location = destruct_jsonObject.getString("building") + " " + destruct_jsonObject.getString("floor") + " " + destruct_jsonObject.getString("spot");
-                        taskListItem.teamName = destruct_jsonObject.getString("team_name");
+                        taskListItem.team_name = destruct_jsonObject.getString("team_name");
                         taskListItem.taskplan = destruct_jsonObject.getInt("taskplan");
 
                         desturct_planned_facilities.add(taskListItem);
+                    }
+
+                    JSONArray etc = jsonObject.getJSONArray("etc");
+                    for(int i = 0; i < etc.length(); i++) {
+                        JSONObject etc_jsonObject = etc.getJSONObject(i);
+
+                        TaskListItem taskListItem = new TaskListItem();
+                        taskListItem.id = etc_jsonObject.getString("id");
+                        taskListItem.location = etc_jsonObject.getString("facility_serial");
+                        taskListItem.team_name = etc_jsonObject.getString("team_name");
+                        taskListItem.taskplan = etc_jsonObject.getInt("type");
+
+                        etc_taskplans.add(taskListItem);
                     }
 
                     response.add(expire_facilities);
                     response.add(construct_planned_facilities);
                     response.add(edit_planned_facilities);
                     response.add(desturct_planned_facilities);
+                    response.add(etc_taskplans);
 
                     apiCallback.onSuccess(response);
 
@@ -1333,6 +1352,18 @@ public class API {
                         taskListItem.serial = plan_jsonObject.getString("serial");
                         taskListItem.location = plan_jsonObject.getString("building") + " " + plan_jsonObject.getString("floor") + " " + plan_jsonObject.getString("spot");
                         taskListItem.taskplan = plan_jsonObject.getInt("taskplan");
+
+                        plan_task.add(taskListItem);
+                    }
+
+                    JSONArray etc_plan = jsonObject.getJSONArray("etc_plan");
+                    for(int i = 0; i < etc_plan.length(); i++) {
+                        JSONObject etc_plan_jsonObject = etc_plan.getJSONObject(i);
+
+                        TaskListItem taskListItem = new TaskListItem();
+                        taskListItem.id = etc_plan_jsonObject.getString("id");
+                        taskListItem.location = etc_plan_jsonObject.getString("facility_serial");
+                        taskListItem.taskplan = etc_plan_jsonObject.getInt("type");
 
                         plan_task.add(taskListItem);
                     }
@@ -1387,12 +1418,13 @@ public class API {
         new NetworkTask(url, values, true, networkCallback).execute();
     }
 
-    public void editTaskPlan(String facility_id, String team_id, int type) {
+    public void editTaskPlan(String place_id, String facility_serial, String team_id, int type) {
 
         String url = TASKPLAN_EDIT;
 
         ContentValues values = new ContentValues();
-        values.put("facility_id", facility_id);
+        values.put("place_id", place_id);
+        values.put("facility_serial", facility_serial);
         values.put("team_id", team_id);
         values.put("type", type);
 
@@ -1412,18 +1444,59 @@ public class API {
         new NetworkTask(url, values, true, networkCallback).execute();
     }
 
-    public void deleteTaskplan(String facility_id) {
+    public void deleteTaskplan(String place_id, String facility_serial) {
 
         String url = TASKPLAN_DELETE;
 
         ContentValues values = new ContentValues();
-        values.put("facility_id", facility_id);
+        values.put("place_id", place_id);
+        values.put("facility_serial", facility_serial);
 
         NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
 
             @Override
             public void onSuccess(String result) {
                 apiCallback.onSuccess(result);
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+    }
+
+    public void getEtcTaskplan(String taskplan_id) {
+
+        String url = TASKPLAN_ETC;
+
+        ContentValues values = new ContentValues();
+        values.put("taskplan_id", taskplan_id);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+
+                TaskplanEtc taskplanEtc = new TaskplanEtc();
+
+                try {
+
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    taskplanEtc.id = jsonObject.getString("id");
+                    taskplanEtc.name = jsonObject.getString("facility_serial");
+                    taskplanEtc.team_id = jsonObject.getString("team_id");
+                    taskplanEtc.in_task = jsonObject.getBoolean("in_task");
+
+                    apiCallback.onSuccess(taskplanEtc);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
@@ -1471,6 +1544,122 @@ public class API {
 
         new NetworkTask(url, values, true, networkCallback).execute();
     }
+
+    /*-----------------------------------------생산성관련-----------------------------------------*/
+
+    public void getProductivity(String place_id) {
+
+        getProductivity(place_id, Calendar.getInstance().getTime());
+
+    }
+
+    public void getProductivity(String place_id, Date target_time) {
+
+        String url = PRODUCTIVITY;
+
+        ContentValues values = new ContentValues();
+        values.put("place_id", place_id);
+
+        if(target_time != null)
+            values.put("target_time", target_time.getTime() / 1000L);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    JSONArray teams = jsonObject.getJSONArray("teams");
+                    JSONObject totals_cube = jsonObject.getJSONObject("totals_cube");
+                    JSONObject totals_square = jsonObject.getJSONObject("totals_square");
+                    JSONObject totals_manday = jsonObject.getJSONObject("totals_manday");
+
+                    ArrayList<ProductivityItem> productivityItems = new ArrayList<>();
+
+                    for(int i = 0; i < teams.length(); i++) {
+                        JSONObject team_jsonObject = teams.getJSONObject(i);
+
+                        ProductivityItem productivityItem = new ProductivityItem();
+                        String team_id = team_jsonObject.getString("id");
+                        productivityItem.team_id = team_id;
+                        productivityItem.team_name = team_jsonObject.getString("name");
+                        productivityItem.productivity_cube = totals_cube.getString(team_id);
+                        productivityItem.productivity_danger = totals_square.getString(team_id);
+                        productivityItem.manday = totals_manday.getString(team_id);
+
+                        productivityItems.add(productivityItem);
+                    }
+
+                    apiCallback.onSuccess(productivityItems);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+
+    }
+
+    public void getTeamProductivity(String place_id, String team_id) {
+
+        String url = DASHBOARD;
+
+        ContentValues values = new ContentValues();
+        values.put("place_id", place_id);
+        values.put("team_id", team_id);
+
+        NetworkTask.NetworkCallback networkCallback = new NetworkTask.NetworkCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    double total_cube = jsonObject.getDouble("total_cube");
+                    double total_square = jsonObject.getDouble("total_square");
+                    int total_manday = jsonObject.getInt("total_manday");
+                    int safe_point = jsonObject.getInt("safe_points");
+
+                    MenuActivity.Dashboard dashboard = new MenuActivity.Dashboard();
+                    dashboard.cube = total_cube;
+                    dashboard.square = total_square;
+                    dashboard.manday = total_manday;
+                    dashboard.safe_point = safe_point;
+
+                    apiCallback.onSuccess(dashboard);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailed(String error) {
+                apiCallback.onFailed(error);
+            }
+        };
+
+        new NetworkTask(url, values, true, networkCallback).execute();
+
+
+    }
+
+
 
 
 }

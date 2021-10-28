@@ -12,7 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FacManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MandaySearchActivity"></activity>
+        <activity android:name=".SafePointTeamActivity"></activity>
+        <activity android:name=".SafePointActivity" />
+        <activity android:name=".ProductivityTeamActivity" />
+        <activity android:name=".ProductivityActivity" />
+        <activity android:name=".TaskEtcActivity" />
+        <activity android:name=".MandaySearchActivity" />
         <activity android:name=".PasswordActivity" />
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".PlaceDeleteActivity" />

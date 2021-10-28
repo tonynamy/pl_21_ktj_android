@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="8dp"
+    android:paddingTop="4dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/textSafePointTeamDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="6"
+        android:ellipsize="none"
+        android:singleLine="true"
+        android:text="11일 15시"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textSafePointTeamTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:text="개선지시서 및 불합리"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textSafePointTeamPoint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:gravity="right"
+        android:singleLine="true"
+        android:text="100점"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+</LinearLayout>

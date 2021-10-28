@@ -12,57 +12,83 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="현장관리"
+        android:text="안전점수 조회"
         android:textColor="@color/black"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textSafePointMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="none"
+            android:singleLine="true"
+            android:text="10월" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:ellipsize="none"
+            android:singleLine="true"
+            android:text="팀이름" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:ellipsize="none"
+            android:gravity="right"
+            android:paddingRight="16dp"
+            android:singleLine="true"
+            android:text="점수" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerPlace"
+        android:id="@+id/recyclerSafePoint"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="70dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/textbox"
-        app:layout_constraintBottom_toTopOf="@+id/btnCreatePlace"
+        app:layout_constraintBottom_toTopOf="@id/buttonSafePointMonth"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <TextView
-        android:id="@+id/textPlaceResult"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="현장정보를 불러오는중입니다."
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@id/recyclerPlace"
-        app:layout_constraintStart_toStartOf="@id/recyclerPlace"
-        app:layout_constraintTop_toTopOf="@id/recyclerPlace" />
-
     <Button
-        android:id="@+id/btnCreatePlace"
-        android:layout_width="match_parent"
+        android:id="@+id/buttonSafePointMonth"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
+        android:layout_weight="1"
         android:background="@drawable/buttonbox"
-        android:text="현장추가"
+        android:text="지난달 보기"
         android:textSize="24sp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

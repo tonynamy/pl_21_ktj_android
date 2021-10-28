@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/textProductivityTeamName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:ellipsize="none"
+        android:singleLine="true"
+        android:text="팀이름팀"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textProductivity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_weight="10"
+        android:ellipsize="none"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:text="루베+헤베"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textProductivityManday"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:ellipsize="none"
+        android:gravity="right"
+        android:singleLine="true"
+        android:text="공수"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+</LinearLayout>

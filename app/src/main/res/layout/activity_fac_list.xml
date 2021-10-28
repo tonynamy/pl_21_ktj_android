@@ -52,28 +52,49 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/textbox"
-        app:layout_constraintBottom_toTopOf="@+id/btnResearch"
+        app:layout_constraintBottom_toTopOf="@+id/layoutImsi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <Button
-        android:id="@+id/btnResearch"
+    <LinearLayout
+        android:id="@+id/layoutImsi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/buttonbox"
-        android:text="다시검색"
-        android:textSize="24sp"
-        app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnEtcTaskplan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttonbox"
+            android:text="기타작업"
+            android:textSize="24sp"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/btnResearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/buttonbox"
+            android:text="다시검색"
+            android:textSize="24sp"
+            app:backgroundTint="@null" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

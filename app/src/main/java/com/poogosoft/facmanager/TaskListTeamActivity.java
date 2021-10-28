@@ -69,14 +69,28 @@ public class TaskListTeamActivity extends AppCompatActivity {
         for(TaskListAdapter adapter : adapterList) {
             adapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
                 @Override
-                public void onClick(View v, String facility_id) {
-                    Intent intent = new Intent(v.getContext(), FacilityActivity.class);
-                    intent.putExtra("level", level);
-                    intent.putExtra("place_id", place_id);
-                    intent.putExtra("team_id", team_id);
-                    intent.putExtra("facility_id", facility_id);
-                    intent.putExtra("button_right", button_right);
-                    startActivity(intent);
+                public void onClick(View v, String id, int type) {
+                    //도면이 있는 작업일때
+                    if(type != 4) {
+                        Intent intent = new Intent(v.getContext(), FacilityActivity.class);
+                        intent.putExtra("level", level);
+                        intent.putExtra("place_id", place_id);
+                        intent.putExtra("team_id", team_id);
+                        intent.putExtra("facility_id", id);
+                        intent.putExtra("button_right", button_right);
+                        startActivity(intent);
+
+                     //도면이 없는 작업일때
+                    } else {
+                        Intent intent = new Intent(v.getContext(), TaskEtcActivity.class);
+                        intent.putExtra("level", level);
+                        intent.putExtra("place_id", place_id);
+                        intent.putExtra("team_id", team_id);
+                        intent.putExtra("task_id", id);
+                        intent.putExtra("button_right", button_right);
+                        startActivity(intent);
+                    }
+
                 }
             });
         }

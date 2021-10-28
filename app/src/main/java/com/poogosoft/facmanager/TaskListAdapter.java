@@ -19,7 +19,7 @@ import java.util.Date;
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHolder> {
 
     interface OnItemClickListener {
-        void onClick(View v, String facility_id);
+        void onClick(View v, String id, int type);
     }
     OnItemClickListener onItemClickListener;
 
@@ -65,6 +65,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        LinearLayout layoutSerialDate;
         TextView txtTaskSerial;
         ImageView imgPlanCircle2;
         LinearLayout layoutTaskPlan;
@@ -76,6 +77,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            layoutSerialDate = itemView.findViewById(R.id.layoutSerialDate);
             txtTaskSerial = itemView.findViewById(R.id.txtTaskSerial);
             imgPlanCircle2 = itemView.findViewById(R.id.imgPlanCircle2);
             layoutTaskPlan = itemView.findViewById(R.id.layoutTaskPlan);
@@ -88,14 +90,18 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onClick(v, taskListItemList.get(getAdapterPosition()).id);
+                    onItemClickListener.onClick(v, taskListItemList.get(getAdapterPosition()).id, taskListItemList.get(getAdapterPosition()).taskplan);
                 }
             });
         }
 
         public void setItem(TaskListItem taskListItem) {
             //승인번호
-            txtTaskSerial.setText(taskListItem.serial);
+            if(taskListItem.serial != null && !taskListItem.serial.isEmpty()) {
+                txtTaskSerial.setText(taskListItem.serial);
+            } else {
+                layoutSerialDate.setVisibility(View.GONE);
+            }
 
             //기간만료 임박
             if(is_expired_list){
@@ -140,10 +146,14 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
                         stringTaskPlan = "해체예정";
                         imgPlanCircle2.setColorFilter(Color.parseColor("#888899"));
                         break;
+                    case 4:
+                        stringTaskPlan = "기타작업";
+                        imgPlanCircle2.setColorFilter(Color.parseColor("#888899"));
+                        break;
                 }
 
-                if(taskListItem.teamName != null) {
-                    txtTaskTeamName.setText(taskListItem.teamName);
+                if(taskListItem.team_name != null) {
+                    txtTaskTeamName.setText(taskListItem.team_name);
                     txtTaskTeamName.setVisibility(View.VISIBLE);
                     txtTaskPlan.setVisibility(View.GONE);
                     txtTaskState.setVisibility(View.GONE);
