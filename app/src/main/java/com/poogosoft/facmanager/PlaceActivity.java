@@ -76,17 +76,31 @@ public class PlaceActivity extends AppCompatActivity {
                     }
                 });
 
-                //현장기록삭제
-                textDeletePlace.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(), PlaceDeleteActivity.class);
-                        intent.putExtra("place_id", place.id);
-                        intent.putExtra("place_name", place.name);
-                        startActivity(intent);
-                        dialog.dismiss();
-                    }
-                });
+                if(place.isDeletable) {
+
+                    //현장기록삭제
+                    textDeletePlace.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(v.getContext(), PlaceDeleteActivity.class);
+                            intent.putExtra("place_id", place.id);
+                            intent.putExtra("place_name", place.name);
+                            startActivity(intent);
+                            dialog.dismiss();
+                        }
+                    });
+
+                } else {
+
+                    //현장기록삭제
+                    textDeletePlace.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(PlaceActivity.this, "삭제할 수 없는 현장입니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
 
                 //취소
                 textDialogCancel6.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +157,7 @@ public class PlaceActivity extends AppCompatActivity {
                     Place placeItem = new Place();
                     placeItem.id = place.id;
                     placeItem.name = place.name;
+                    placeItem.isDeletable = place.isDeletable;
                     placeAdapter.addItem(placeItem);
                 }
                 textPlaceResult.setVisibility(View.GONE);

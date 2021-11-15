@@ -70,7 +70,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
                 public void onClick(View v) {
 
                     Place place = placeArrayList.get(getAdapterPosition());
-                    onPlaceClicked.onClick(v, place);
+                    onPlaceClicked.PonClick(v, place);
                 }
             });
         }

@@ -211,10 +211,12 @@ public class API {
 
                         String id = jsonObject.getString("id");
                         String name = jsonObject.getString("name");
+                        boolean isDeletable = jsonObject.getBoolean("isDeletable");
 
                         Place place = new Place();
                         place.id = id;
                         place.name = name;
+                        place.isDeletable = isDeletable;
 
                         places.add(place);
 
